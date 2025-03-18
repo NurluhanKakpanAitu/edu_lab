@@ -1,0 +1,8 @@
+{
+  "title": "Login/Register",
+  "email": "Email",
+  "password": "Password",
+  "loginWithEmail": "Login with Email",
+  "registerWithEmail": "Register with Email",
+  "loginWithGoogle": "Login with Google"
+}
