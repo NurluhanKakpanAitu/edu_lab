@@ -1,8 +1,17 @@
 {
-    "title": "Кіру/Тіркелу",
-    "email": "Электрондық пошта",
-    "password": "Құпия сөз",
-    "login": "Кіру",
-    "register": "Тіркелу",
-    "withGoogle": "Google арқылы жалғастыру"
-  }
+  "title": "Кіру/Тіркелу",
+  "email": "Электрондық пошта",
+  "password": "Құпия сөз",
+  "login": "Кіру",
+  "register": "Тіркелу",
+  "withGoogle": "Google арқылы жалғастыру",
+  "imageUploadFailed": "Суретті жүктеу сәтсіз аяқталды",
+  "profileUpdated": "Профиль жаңартылды",
+  "profileUpdateFailed": "Профиль жаңарту сәтсіз аяқталды",
+  "logoutFailed": "Шығу сәтсіз аяқталды",
+  "profile": "Профиль",
+  "nickname": "Аты",
+  "about": "Туралы",
+  "newPassword": "Жаңа құпия сөз",
+  "saveChanges": "Өзгерістерді сақтау"
+}

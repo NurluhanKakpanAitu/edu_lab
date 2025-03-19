@@ -74,11 +74,11 @@ class AuthScreenState extends State<AuthScreen> {
                   _emailController.text,
                   _passwordController.text,
                 );
-                if (response['success'] == true) {
+                if (response.success == true) {
                   context.go('/profile');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(response['errorMessage'])),
+                    SnackBar(content: Text(response.errorMessage ?? '')),
                   );
                 }
               },
@@ -106,11 +106,11 @@ class AuthScreenState extends State<AuthScreen> {
                   _emailController.text,
                   _passwordController.text,
                 );
-                if (response['success'] == true) {
+                if (response.success == true) {
                   context.go('/profile');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(response['errorMessage'])),
+                    SnackBar(content: Text(response.errorMessage ?? '')),
                   );
                 }
               },

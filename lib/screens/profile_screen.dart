@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:edu_lab/entities/user_get_info.dart';
+import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/file_service.dart';
 import 'package:edu_lab/services/user_service.dart';
+import 'package:edu_lab/utils/language_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../app_localizations.dart';
@@ -26,7 +28,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
   final UserService _userService = UserService();
   final FileService _fileService = FileService();
-  final UserGetInfo currentUser = UserGetInfo(id: '', nickname: '', email: '');
+  late String currentUserId;
+  Locale _selectedLocale = Locale('en', '');
 
   @override
   void initState() {
@@ -36,16 +39,13 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     var response = await _authService.getUser();
+    var user = UserGetInfo.fromJson(response.data);
     setState(() {
-      _nicknameController.text = response.nickname;
-      _emailController.text = response.email;
-      _aboutController.text = response.about ?? '';
-      _photoPath = response.photoPath;
-      currentUser.id = response.id;
-      currentUser.nickname = response.nickname;
-      currentUser.email = response.email;
-      currentUser.photoPath = response.photoPath;
-      currentUser.about = response.about;
+      _nicknameController.text = user.nickname;
+      _emailController.text = user.email;
+      _aboutController.text = user.about ?? '';
+      _photoPath = user.photoPath;
+      currentUserId = user.id;
     });
   }
 
@@ -59,24 +59,29 @@ class ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
-      print('Error picking image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).translate('imageUploadFailed'),
+          ),
+        ),
+      );
     }
   }
 
   Future<String> _uploadImageToMinIO(XFile image) async {
     try {
-      String? imagePath = await _fileService.uploadFile(File(image.path));
-      return imagePath ?? '';
+      var response = await _fileService.uploadFile(File(image.path));
+      return response.data ?? '';
     } catch (e) {
-      print('Error uploading image: $e');
       return '';
     }
   }
 
   Future<void> _saveProfile() async {
     try {
-      var response = await _userService.updateProfile(
-        currentUser.id,
+      await _userService.updateProfile(
+        currentUserId,
         _nicknameController.text,
         _emailController.text,
         _aboutController.text,
@@ -104,6 +109,18 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _logout() async {
+    await _authService.logout();
+    Navigator.pushReplacementNamed(context, '/auth');
+  }
+
+  void _changeLanguage(Locale locale) {
+    setState(() {
+      _selectedLocale = locale;
+    });
+    MyApp.setLocale(context, locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -112,18 +129,11 @@ class ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: Text(localizations.translate('profile')),
         actions: [
-          IconButton(
-            icon: Icon(_isEditing ? Icons.save : Icons.edit),
-            onPressed: () {
-              if (_isEditing) {
-                _saveProfile();
-              } else {
-                setState(() {
-                  _isEditing = true;
-                });
-              }
-            },
+          LanguageDropdown(
+            selectedLocale: _selectedLocale,
+            onLocaleChange: _changeLanguage,
           ),
+          IconButton(icon: Icon(Icons.logout), onPressed: _logout),
         ],
       ),
       body: SingleChildScrollView(
@@ -232,6 +242,18 @@ class ProfileScreenState extends State<ProfileScreen> {
             ],
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (_isEditing) {
+            _saveProfile();
+          } else {
+            setState(() {
+              _isEditing = true;
+            });
+          }
+        },
+        child: Icon(_isEditing ? Icons.save : Icons.edit),
       ),
     );
   }

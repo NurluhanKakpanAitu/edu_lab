@@ -4,5 +4,14 @@
   "password": "Password",
   "login": "Login with Email",
   "register": "Register with Email",
-  "withGoogle": "Login with Google"
+  "withGoogle": "Login with Google",
+  "imageUploadFailed" : "Image upload failed",
+  "profileUpdated" : "Profile updated",
+  "profileUpdateFailed" : "Profile update failed",
+  "logoutFailed" : "Logout failed",
+  "profile": "Profile",
+  "nickname": "Nickname",
+  "about": "About",
+  "newPassword" : "New Password",
+  "saveChanges" : "Save Changes"
 }

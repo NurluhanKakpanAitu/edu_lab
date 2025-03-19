@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:edu_lab/utils/response.dart';
 import 'package:http/http.dart' as http;
 
 class FileService {
@@ -8,7 +9,7 @@ class FileService {
 
   /// Uploads a file to MinIO storage.
   /// Returns the public URL of the uploaded file.
-  Future<String?> uploadFile(File file) async {
+  Future<ApiResponse> uploadFile(File file) async {
     try {
       String fileName = file.path.split('/').last;
       FormData formData = FormData.fromMap({
@@ -22,13 +23,12 @@ class FileService {
       );
 
       if (response.statusCode == 200) {
-        return response.data["data"];
+        return ApiResponse.fromJson(response.data);
       } else {
-        throw Exception('Failed to upload file');
+        return ApiResponse.fromError('Failed to upload file');
       }
     } catch (e) {
-      print('Error uploading file: $e');
-      return null;
+      return ApiResponse.fromError('Failed to upload file');
     }
   }
 
@@ -45,7 +45,6 @@ class FileService {
         throw Exception('Failed to download file');
       }
     } catch (e) {
-      print('Error downloading file: $e');
       return null;
     }
   }

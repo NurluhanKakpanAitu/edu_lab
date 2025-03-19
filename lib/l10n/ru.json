@@ -4,5 +4,14 @@
   "password": "Пароль",
   "login": "Войти",
   "register": "Зарегистрироваться",
-  "withGoogle": "Продолжить с Google"
+  "withGoogle": "Продолжить с Google",
+  "imageUploadFailed": "Ошибка загрузки изображения",
+  "profileUpdated": "Профиль обновлен",
+  "profileUpdateFailed": "Ошибка обновления профиля",
+  "logoutFailed": "Ошибка выхода",
+  "profile": "Профиль",
+  "nickname": "Никнейм",
+  "about": "О себе",
+  "newPassword": "Новый пароль",
+  "saveChanges": "Сохранить изменения"
 }
