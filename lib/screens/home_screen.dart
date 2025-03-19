@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   HomeScreenState createState() => HomeScreenState();
 }
@@ -73,18 +75,66 @@ class HomeScreenState extends State<HomeScreen> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount:
-                    courses.length, // Replace with your dynamic course count
+                    courses.length, // Use the length of the loaded courses
                 itemBuilder: (context, index) {
                   var course = courses[index];
+                  var courseTitle =
+                      course.title?.getTranslation('kk') ??
+                      'No Title'; // Get the course title in Kazakh
+                  var courseDescription =
+                      course.description?.getTranslation('kk') ??
+                      'No Description'; // Get the course description in Kazakh
+
+                  var courseImage = course.imagePath;
                   return Card(
-                    child: ListTile(
-                      title: Text(course.title?.getTranslation('kk') ?? ''),
-                      subtitle: Text(
-                        course.description?.getTranslation('kk') ?? '',
+                    elevation: 4,
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Display the course image
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              'http://localhost:9000/course/$courseImage',
+                              height: 200,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 150,
+                                  color: Colors.grey[300],
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      size: 50,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            courseTitle,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            courseDescription,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
                       ),
-                      onTap: () {
-                        // Handle course tap
-                      },
                     ),
                   );
                 },
