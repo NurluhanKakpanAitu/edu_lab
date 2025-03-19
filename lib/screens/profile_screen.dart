@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:edu_lab/components/bottom_navbar.dart';
 import 'package:edu_lab/entities/user_get_info.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
@@ -7,6 +8,7 @@ import 'package:edu_lab/services/file_service.dart';
 import 'package:edu_lab/services/user_service.dart';
 import 'package:edu_lab/utils/language_drop_down.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../app_localizations.dart';
 
@@ -111,7 +113,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _logout() async {
     await _authService.logout();
-    Navigator.pushReplacementNamed(context, '/auth');
+    context.go('/auth');
   }
 
   void _changeLanguage(Locale locale) {
@@ -225,36 +227,35 @@ class ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: Text(
-                  localizations.translate('saveChanges'),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ],
+            ElevatedButton(
+              onPressed: () {
+                if (_isEditing) {
+                  _saveProfile();
+                } else {
+                  setState(() {
+                    _isEditing = true;
+                  });
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
-            ],
+              child: Text(
+                _isEditing
+                    ? localizations.translate('saveChanges')
+                    : localizations.translate('editProfile'),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_isEditing) {
-            _saveProfile();
-          } else {
-            setState(() {
-              _isEditing = true;
-            });
-          }
-        },
-        child: Icon(_isEditing ? Icons.save : Icons.edit),
-      ),
+      bottomNavigationBar: BottomNavbar(locale: _selectedLocale.languageCode),
     );
   }
 

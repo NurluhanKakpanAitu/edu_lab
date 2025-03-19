@@ -1,4 +1,5 @@
 import 'package:edu_lab/app_localizations.dart';
+import 'package:edu_lab/components/bottom_navbar.dart';
 import 'package:edu_lab/entities/course.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/course_service.dart';
@@ -14,23 +15,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
   Locale _selectedLocale = Locale('kk', '');
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    if (index == 1) {
-      context.go('/profile');
-    } else if (index == 2) {
-      context.go('/discussion');
-    }
-  }
-
   var courseService = CourseService();
-
   List<Course> courses = [];
 
   @override
@@ -213,26 +200,7 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: localizations.translate('home'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: localizations.translate('profile'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.forum),
-            label: localizations.translate('discussions'),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blueAccent,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-      ),
+      bottomNavigationBar: BottomNavbar(locale: _selectedLocale.languageCode),
     );
   }
 }

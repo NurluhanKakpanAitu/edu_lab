@@ -17,5 +17,6 @@
   "courses" : "Courses",
   "home" : "Home",
   "discussions" : "Discussions",
-  "goToCourse" : "Go to course"
+  "goToCourse" : "Go to course",
+  "editProfile" : "Edit Profile"
 }

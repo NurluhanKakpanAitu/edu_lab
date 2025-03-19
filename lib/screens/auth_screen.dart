@@ -17,12 +17,28 @@ class AuthScreenState extends State<AuthScreen> {
   final _passwordController = TextEditingController();
   Locale _selectedLocale = Locale('kk', '');
   final AuthService _authService = AuthService();
+  bool _isButtonEnabled = false;
 
   void _changeLanguage(Locale locale) {
     setState(() {
       _selectedLocale = locale;
     });
     MyApp.setLocale(context, locale);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_updateButtonState);
+    _passwordController.addListener(_updateButtonState);
+  }
+
+  void _updateButtonState() {
+    setState(() {
+      _isButtonEnabled =
+          _emailController.text.isNotEmpty &&
+          _passwordController.text.isNotEmpty;
+    });
   }
 
   @override
@@ -69,19 +85,24 @@ class AuthScreenState extends State<AuthScreen> {
             ),
             SizedBox(height: 24.0),
             ElevatedButton(
-              onPressed: () async {
-                final response = await _authService.login(
-                  _emailController.text,
-                  _passwordController.text,
-                );
-                if (response.success == true) {
-                  context.go('/profile');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(response.errorMessage ?? '')),
-                  );
-                }
-              },
+              onPressed:
+                  _isButtonEnabled
+                      ? () async {
+                        final response = await _authService.login(
+                          _emailController.text,
+                          _passwordController.text,
+                        );
+                        if (response.success == true) {
+                          context.go('/home');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(response.errorMessage ?? ''),
+                            ),
+                          );
+                        }
+                      }
+                      : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 30, 151, 139),
                 shape: RoundedRectangleBorder(
@@ -101,19 +122,24 @@ class AuthScreenState extends State<AuthScreen> {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () async {
-                final response = await _authService.register(
-                  _emailController.text,
-                  _passwordController.text,
-                );
-                if (response.success == true) {
-                  context.go('/profile');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(response.errorMessage ?? '')),
-                  );
-                }
-              },
+              onPressed:
+                  _isButtonEnabled
+                      ? () async {
+                        final response = await _authService.register(
+                          _emailController.text,
+                          _passwordController.text,
+                        );
+                        if (response.success == true) {
+                          context.go('/home');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(response.errorMessage ?? ''),
+                            ),
+                          );
+                        }
+                      }
+                      : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 39, 96, 219),
                 shape: RoundedRectangleBorder(
