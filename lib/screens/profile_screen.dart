@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:edu_lab/entities/user_get_info.dart';
 import 'package:edu_lab/services/auth_service.dart';
+import 'package:edu_lab/services/file_service.dart';
+import 'package:edu_lab/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,10 +19,14 @@ class ProfileScreenState extends State<ProfileScreen> {
   final _nicknameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _aboutController = TextEditingController();
   String? _photoPath;
   bool _isEditing = false;
   final ImagePicker _picker = ImagePicker();
   final AuthService _authService = AuthService();
+  final UserService _userService = UserService();
+  final FileService _fileService = FileService();
+  final UserGetInfo currentUser = UserGetInfo(id: '', nickname: '', email: '');
 
   @override
   void initState() {
@@ -29,7 +39,13 @@ class ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _nicknameController.text = response.nickname;
       _emailController.text = response.email;
+      _aboutController.text = response.about ?? '';
       _photoPath = response.photoPath;
+      currentUser.id = response.id;
+      currentUser.nickname = response.nickname;
+      currentUser.email = response.email;
+      currentUser.photoPath = response.photoPath;
+      currentUser.about = response.about;
     });
   }
 
@@ -37,37 +53,64 @@ class ProfileScreenState extends State<ProfileScreen> {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
+        String imagePath = await _uploadImageToMinIO(image);
         setState(() {
-          _photoPath = image.path;
+          _photoPath = imagePath;
         });
-        // TODO: Upload image to backend
       }
     } catch (e) {
       print('Error picking image: $e');
     }
   }
 
+  Future<String> _uploadImageToMinIO(XFile image) async {
+    try {
+      String? imagePath = await _fileService.uploadFile(File(image.path));
+      return imagePath ?? '';
+    } catch (e) {
+      print('Error uploading image: $e');
+      return '';
+    }
+  }
+
   Future<void> _saveProfile() async {
     try {
-      // TODO: Implement saving profile to backend
+      var response = await _userService.updateProfile(
+        currentUser.id,
+        _nicknameController.text,
+        _emailController.text,
+        _aboutController.text,
+        _photoPath,
+        _passwordController.text.isNotEmpty ? _passwordController.text : null,
+      );
       setState(() {
         _isEditing = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Profile updated successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).translate('profileUpdated'),
+          ),
+        ),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to update profile')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).translate('profileUpdateFailed'),
+          ),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text(localizations.translate('profile')),
         actions: [
           IconButton(
             icon: Icon(_isEditing ? Icons.save : Icons.edit),
@@ -127,7 +170,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               controller: _nicknameController,
               enabled: _isEditing,
               decoration: InputDecoration(
-                labelText: 'Nickname',
+                labelText: localizations.translate('nickname'),
                 prefixIcon: Icon(Icons.person),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -139,8 +182,20 @@ class ProfileScreenState extends State<ProfileScreen> {
               controller: _emailController,
               enabled: _isEditing,
               decoration: InputDecoration(
-                labelText: 'Email',
+                labelText: localizations.translate('email'),
                 prefixIcon: Icon(Icons.email),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: _aboutController,
+              enabled: _isEditing,
+              decoration: InputDecoration(
+                labelText: localizations.translate('about'),
+                prefixIcon: Icon(Icons.info),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -152,7 +207,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'New Password (optional)',
+                  labelText: localizations.translate('newPasswordOptional'),
                   prefixIcon: Icon(Icons.lock),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
@@ -170,7 +225,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 child: Text(
-                  'Save Changes',
+                  localizations.translate('saveChanges'),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -186,6 +241,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     _nicknameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _aboutController.dispose();
     super.dispose();
   }
 }
