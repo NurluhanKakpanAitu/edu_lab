@@ -4,5 +4,5 @@
   "password": "Пароль",
   "login": "Войти",
   "register": "Зарегистрироваться",
-  "loginWithGoogle": "Войти через Google"
+  "withGoogle": "Продолжить с Google"
 }

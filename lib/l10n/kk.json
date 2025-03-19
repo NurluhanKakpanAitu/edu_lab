@@ -2,7 +2,7 @@
     "title": "Кіру/Тіркелу",
     "email": "Электрондық пошта",
     "password": "Құпия сөз",
-    "loginWithEmail": "Кіру",
-    "registerWithEmail": "Тіркелу",
-    "loginWithGoogle": "Google арқылы кіру"
+    "login": "Кіру",
+    "register": "Тіркелу",
+    "withGoogle": "Google арқылы жалғастыру"
   }

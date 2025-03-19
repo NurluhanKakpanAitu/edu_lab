@@ -1,8 +1,9 @@
+import 'package:edu_lab/app_localizations.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
+import 'package:edu_lab/utils/language_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../app_localizations.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -27,35 +28,14 @@ class AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.translate('title')),
         backgroundColor: Colors.blueAccent,
         actions: [
-          DropdownButton<Locale>(
-            value: _selectedLocale,
-            icon: Icon(Icons.language, color: Colors.white),
-            dropdownColor: Colors.blueAccent,
-            onChanged: (Locale? newValue) {
-              if (newValue != null) {
-                _changeLanguage(newValue);
-              }
-            },
-            items: [
-              DropdownMenuItem(
-                value: Locale('en', ''),
-                child: Text('English', style: TextStyle(color: Colors.white)),
-              ),
-              DropdownMenuItem(
-                value: Locale('ru', ''),
-                child: Text('Русский', style: TextStyle(color: Colors.white)),
-              ),
-              DropdownMenuItem(
-                value: Locale('kk', ''),
-                child: Text('Қазақша', style: TextStyle(color: Colors.white)),
-              ),
-            ],
+          LanguageDropdown(
+            selectedLocale: _selectedLocale,
+            onLocaleChange: _changeLanguage,
           ),
         ],
       ),
@@ -110,7 +90,7 @@ class AuthScreenState extends State<AuthScreen> {
                 padding: EdgeInsets.symmetric(vertical: 16.0),
               ),
               child: Text(
-                localizations.translate('loginWithEmail'),
+                localizations.translate('login'),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
@@ -142,7 +122,7 @@ class AuthScreenState extends State<AuthScreen> {
                 padding: EdgeInsets.symmetric(vertical: 16.0),
               ),
               child: Text(
-                localizations.translate('registerWithEmail'),
+                localizations.translate('register'),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
@@ -158,7 +138,7 @@ class AuthScreenState extends State<AuthScreen> {
               onPressed: () {},
               icon: Image.asset('assets/google_logo.png', height: 24.0),
               label: Text(
-                localizations.translate('loginWithGoogle'),
+                localizations.translate('withGoogle'),
                 style: TextStyle(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
