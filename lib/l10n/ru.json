@@ -13,5 +13,9 @@
   "nickname": "Никнейм",
   "about": "О себе",
   "newPassword": "Новый пароль",
-  "saveChanges": "Сохранить изменения"
+  "saveChanges": "Сохранить изменения",
+  "courses" : "Курсы",
+  "home" : "Главная",
+  "discussions" : "Обсуждения",
+  "goToCourse" : "Перейти к курсу"
 }

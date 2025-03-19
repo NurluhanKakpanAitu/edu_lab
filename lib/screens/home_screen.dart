@@ -1,5 +1,8 @@
+import 'package:edu_lab/app_localizations.dart';
 import 'package:edu_lab/entities/course.dart';
+import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/course_service.dart';
+import 'package:edu_lab/utils/language_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  Locale _selectedLocale = Locale('kk', '');
 
   void _onItemTapped(int index) {
     setState(() {
@@ -21,7 +25,7 @@ class HomeScreenState extends State<HomeScreen> {
     if (index == 1) {
       context.go('/profile');
     } else if (index == 2) {
-      Navigator.pushNamed(context, '/discussion');
+      context.go('/discussion');
     }
   }
 
@@ -48,8 +52,17 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _changeLanguage(Locale locale) {
+    setState(() {
+      _selectedLocale = locale;
+    });
+    MyApp.setLocale(context, locale);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -59,6 +72,12 @@ class HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
         elevation: 4,
+        actions: [
+          LanguageDropdown(
+            selectedLocale: _selectedLocale,
+            onLocaleChange: _changeLanguage,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -67,7 +86,7 @@ class HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Courses',
+                localizations.translate('courses'),
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
@@ -79,10 +98,14 @@ class HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   var course = courses[index];
                   var courseTitle =
-                      course.title?.getTranslation('kk') ??
+                      course.title?.getTranslation(
+                        _selectedLocale.languageCode,
+                      ) ??
                       'No Title'; // Get the course title in Kazakh
                   var courseDescription =
-                      course.description?.getTranslation('kk') ??
+                      course.description?.getTranslation(
+                        _selectedLocale.languageCode,
+                      ) ??
                       'No Description'; // Get the course description in Kazakh
 
                   // Truncate the description to the first 100 characters
@@ -154,7 +177,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               child: Text(
-                                'Go to Course',
+                                localizations.translate('goToCourse'),
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -191,10 +214,19 @@ class HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          BottomNavigationBarItem(icon: Icon(Icons.forum), label: 'Discussion'),
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: localizations.translate('home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: localizations.translate('profile'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.forum),
+            label: localizations.translate('discussions'),
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blueAccent,

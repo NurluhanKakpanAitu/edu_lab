@@ -13,5 +13,9 @@
   "nickname": "Аты",
   "about": "Туралы",
   "newPassword": "Жаңа құпия сөз",
-  "saveChanges": "Өзгерістерді сақтау"
+  "saveChanges": "Өзгерістерді сақтау",
+  "courses" : "Курстар",
+  "home" : "Басты бет",
+  "discussions" : "Талқылаулар",
+  "goToCourse"  : "Курсқа өту"
 }

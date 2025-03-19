@@ -13,5 +13,9 @@
   "nickname": "Nickname",
   "about": "About",
   "newPassword" : "New Password",
-  "saveChanges" : "Save Changes"
+  "saveChanges" : "Save Changes",
+  "courses" : "Courses",
+  "home" : "Home",
+  "discussions" : "Discussions",
+  "goToCourse" : "Go to course"
 }
