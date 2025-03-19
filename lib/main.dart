@@ -1,4 +1,4 @@
-import 'package:edu_lab/screens/profile_screen.dart';
+import 'package:edu_lab/router.dart';
 import 'package:flutter/material.dart';
 import 'app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -30,11 +30,11 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Auth',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: ProfileScreen(),
       locale: _locale,
+      routerConfig: router,
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

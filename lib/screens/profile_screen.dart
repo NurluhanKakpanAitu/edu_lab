@@ -28,9 +28,9 @@ class ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadUserData() async {
     var response = await _authService.getUser();
     setState(() {
-      _nicknameController.text = response['nickname'];
-      _emailController.text = response['email'];
-      _photoPath = null;
+      _nicknameController.text = response.nickname;
+      _emailController.text = response.email;
+      _photoPath = response.photoPath;
     });
   }
 
@@ -94,10 +94,12 @@ class ProfileScreenState extends State<ProfileScreen> {
               child: Stack(
                 children: [
                   CircleAvatar(
-                    radius: 60,
+                    radius: 120,
                     backgroundImage:
                         _photoPath != null
-                            ? FileImage(File(_photoPath!))
+                            ? NetworkImage(
+                              'http://localhost:9000/course/$_photoPath',
+                            )
                             : AssetImage('assets/default_avatar.png')
                                 as ImageProvider<Object>,
                   ),

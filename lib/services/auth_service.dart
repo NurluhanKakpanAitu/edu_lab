@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:edu_lab/entities/user_get_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,6 +41,9 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
+        var token = json.decode(response.body)['data'];
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
         return json.decode(response.body);
       } else {
         throw Exception('Failed to register');
@@ -66,18 +70,19 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getUser() async {
+  Future<UserGetInfo> getUser() async {
     try {
       var token = await getToken();
       final response = await http.get(
-        Uri.parse('$baseUrl/user'),
+        Uri.parse('$baseUrl/get-info'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        var decoded = json.decode(response.body)['data'];
+        return UserGetInfo.fromJson(decoded);
       } else {
         throw Exception('Failed to get user');
       }

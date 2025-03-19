@@ -1,6 +1,7 @@
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../app_localizations.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -94,7 +95,7 @@ class AuthScreenState extends State<AuthScreen> {
                   _passwordController.text,
                 );
                 if (response['success'] == true) {
-                  Navigator.pushNamed(context, '/home');
+                  context.go('/profile');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(response['errorMessage'])),
@@ -126,7 +127,7 @@ class AuthScreenState extends State<AuthScreen> {
                   _passwordController.text,
                 );
                 if (response['success'] == true) {
-                  Navigator.pushNamed(context, '/home');
+                  context.go('/profile');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(response['errorMessage'])),
