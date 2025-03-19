@@ -85,6 +85,12 @@ class HomeScreenState extends State<HomeScreen> {
                       course.description?.getTranslation('kk') ??
                       'No Description'; // Get the course description in Kazakh
 
+                  // Truncate the description to the first 100 characters
+                  if (courseDescription.length > 200) {
+                    courseDescription =
+                        '${courseDescription.substring(0, 200)}...';
+                  }
+
                   var courseImage = course.imagePath;
                   return Card(
                     elevation: 4,
@@ -131,6 +137,31 @@ class HomeScreenState extends State<HomeScreen> {
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[700],
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          // Add the "Start Course" button
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {},
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                              ),
+                              child: Text(
+                                'Go to Course',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontFamily: 'Roboto',
+                                ),
+                              ),
                             ),
                           ),
                         ],
