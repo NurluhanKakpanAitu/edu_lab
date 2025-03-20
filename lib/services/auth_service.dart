@@ -1,25 +1,28 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:edu_lab/entities/token.dart';
+import 'package:edu_lab/utils/api_client.dart';
 import 'package:edu_lab/utils/response.dart';
+import 'package:edu_lab/utils/token_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl =
-      'http://localhost:5148/api/Auth'; // Replace with your backend URL
+  var apiClient = ApiClient();
 
   Future<ApiResponse> login(String email, String password) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'email': email, 'password': password}),
+      final response = await apiClient.dio.post(
+        '/Auth/login',
+        data: jsonEncode({'email': email, 'password': password}),
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
       if (response.statusCode == 200) {
-        var token = ApiResponse.fromJson(json.decode(response.body)).data;
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
-        return ApiResponse.fromJson(json.decode(response.body));
+        var apiResponse = ApiResponse.fromJson(json.decode(response.data));
+        var token = Token.fromJson(apiResponse.data);
+        TokenStorage.saveTokens(token);
+        return apiResponse;
       } else {
         return ApiResponse.fromError('Failed to login');
       }
@@ -30,19 +33,19 @@ class AuthService {
 
   Future<ApiResponse> register(String email, String password) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'email': email, 'password': password}),
+      final response = await apiClient.dio.post(
+        '/Auth/register',
+        data: jsonEncode({'email': email, 'password': password}),
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
       if (response.statusCode == 200) {
-        var token = ApiResponse.fromJson(json.decode(response.body)).data;
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
-        return ApiResponse.fromJson(json.decode(response.body));
+        var apiResponse = ApiResponse.fromJson(json.decode(response.data));
+        var token = Token.fromJson(apiResponse.data);
+        TokenStorage.saveTokens(token);
+        return apiResponse;
       } else {
-        throw Exception('Failed to register');
+        return ApiResponse.fromError('Failed to register');
       }
     } catch (e) {
       rethrow;
@@ -52,18 +55,19 @@ class AuthService {
   Future<ApiResponse> logout() async {
     try {
       var token = await getToken();
-      final response = await http.post(
-        Uri.parse('$baseUrl/logout'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
 
+      final response = await apiClient.dio.post(
+        '/Auth/logout', // Replace with your logout endpoint
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token', // Add the Bearer token here
+          },
+        ),
+      );
       if (response.statusCode == 200) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove('token');
-        return ApiResponse.fromJson(json.decode(response.body));
+        TokenStorage.clearTokens();
+        return ApiResponse.fromJson(json.decode(response.data));
       } else {
         return ApiResponse.fromError('Failed to logout');
       }
@@ -75,15 +79,17 @@ class AuthService {
   Future<ApiResponse> getUser() async {
     try {
       var token = await getToken();
-      final response = await http.get(
-        Uri.parse('$baseUrl/get-info'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+      final response = await apiClient.dio.post(
+        '/Auth/get-info', // Replace with your logout endpoint
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token', // Add the Bearer token here
+          },
+        ),
       );
       if (response.statusCode == 200) {
-        return ApiResponse.fromJson(json.decode(response.body));
+        return ApiResponse.fromJson(json.decode(response.data));
       } else {
         return ApiResponse.fromError('Failed to get user info');
       }
@@ -93,7 +99,10 @@ class AuthService {
   }
 
   Future<String> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token') ?? '';
+    var token = await TokenStorage.getAccessToken();
+    if (token == null) {
+      throw Exception('Token is null');
+    }
+    return token;
   }
 }
