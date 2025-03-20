@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:edu_lab/components/language_drop_down.dart';
+import 'package:edu_lab/components/shared/language_drop_down.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

@@ -1,6 +1,8 @@
 import 'package:edu_lab/app_localizations.dart';
-import 'package:edu_lab/components/app_bar.dart';
-import 'package:edu_lab/components/bottom_navbar.dart';
+import 'package:edu_lab/components/course/course_list.dart';
+import 'package:edu_lab/components/shared/app_bar.dart';
+import 'package:edu_lab/components/shared/bottom_navbar.dart';
+import 'package:edu_lab/components/shared/loading_indicator.dart';
 import 'package:edu_lab/entities/course.dart';
 import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/main.dart';
@@ -91,9 +93,7 @@ class HomeScreenState extends State<HomeScreen> {
       ),
       body:
           _isLoading
-              ? Center(
-                child: CircularProgressIndicator(), // Show loading indicator
-              )
+              ? const LoadingIndicator() // Use the LoadingIndicator component
               : SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -108,114 +108,20 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: courses.length,
-                        itemBuilder: (context, index) {
-                          var course = courses[index];
-                          var courseTitle =
-                              course.title?.getTranslation(
-                                _selectedLocale.languageCode,
-                              ) ??
-                              'No Title';
-                          var courseDescription =
-                              course.description?.getTranslation(
-                                _selectedLocale.languageCode,
-                              ) ??
-                              'No Description';
-
-                          if (courseDescription.length > 200) {
-                            courseDescription =
-                                '${courseDescription.substring(0, 200)}...';
-                          }
-
-                          var courseImage = course.imagePath;
-                          return Card(
-                            elevation: 4,
-                            margin: EdgeInsets.symmetric(vertical: 8),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.network(
-                                      'http://localhost:9000/course/$courseImage',
-                                      height: 200,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (
-                                        context,
-                                        error,
-                                        stackTrace,
-                                      ) {
-                                        return Container(
-                                          height: 150,
-                                          color: Colors.grey[300],
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.broken_image,
-                                              size: 50,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    courseTitle,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    courseDescription,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                  SizedBox(height: 15),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: TextButton(
-                                      onPressed: () {},
-                                      style: TextButton.styleFrom(
-                                        backgroundColor: Colors.blueAccent,
-                                        foregroundColor: Colors.white,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 8,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        localizations.translate('goToCourse'),
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontFamily: 'Roboto',
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      CourseList(
+                        courses: courses,
+                        locale: _selectedLocale,
+                      ), // Use the CourseList component
                     ],
                   ),
                 ),
               ),
       bottomNavigationBar: BottomNavbar(locale: _selectedLocale.languageCode),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

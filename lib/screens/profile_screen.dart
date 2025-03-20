@@ -1,7 +1,10 @@
 import 'dart:io';
 
-import 'package:edu_lab/components/app_bar.dart';
-import 'package:edu_lab/components/bottom_navbar.dart';
+import 'package:edu_lab/components/profile/profile_actions.dart';
+import 'package:edu_lab/components/profile/profile_avatar.dart';
+import 'package:edu_lab/components/profile/profile_form.dart';
+import 'package:edu_lab/components/shared/app_bar.dart';
+import 'package:edu_lab/components/shared/bottom_navbar.dart';
 import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
@@ -10,7 +13,6 @@ import 'package:edu_lab/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -62,6 +64,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           _photoPath = imagePath;
         });
       }
+      if (!mounted) return;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -84,7 +87,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _saveProfile() async {
     try {
-      await _userService.updateProfile(
+      var response = await _userService.updateProfile(
         currentUserId,
         _nicknameController.text,
         _emailController.text,
@@ -92,16 +95,28 @@ class ProfileScreenState extends State<ProfileScreen> {
         _photoPath,
         _passwordController.text.isNotEmpty ? _passwordController.text : null,
       );
+
+      if (!mounted) return;
+
       setState(() {
         _isEditing = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).translate('profileUpdated'),
+
+      if (response.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).translate('profileUpdated'),
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.errorMessage ?? 'Profile update failed'),
+          ),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -115,13 +130,16 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _logout() async {
     var response = await _authService.logout();
-    print(response.data);
-    print(response.errorMessage);
+
+    if (!mounted) return;
+
     if (response.success) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('token');
+      context.go('/auth');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response.errorMessage ?? 'Logout failed')),
+      );
     }
-    context.go('/auth');
   }
 
   void _changeLanguage(Locale locale) {
@@ -133,8 +151,6 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
     return Scaffold(
       appBar: CustomAppBar(
         title: 'EduLab',
@@ -142,133 +158,33 @@ class ProfileScreenState extends State<ProfileScreen> {
         onLocaleChange: _changeLanguage,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: _isEditing ? _pickImage : null,
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 120,
-                    backgroundImage:
-                        _photoPath != null
-                            ? NetworkImage(
-                              'http://localhost:9000/course/$_photoPath',
-                            )
-                            : AssetImage('assets/default_avatar.png')
-                                as ImageProvider<Object>,
-                  ),
-                  if (_isEditing)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+            ProfileAvatar(
+              photoPath: _photoPath,
+              isEditing: _isEditing,
+              onPickImage: _pickImage,
             ),
-            SizedBox(height: 24),
-            TextField(
-              controller: _nicknameController,
-              enabled: _isEditing,
-              decoration: InputDecoration(
-                labelText: localizations.translate('nickname'),
-                prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
+            const SizedBox(height: 24),
+            ProfileForm(
+              nicknameController: _nicknameController,
+              emailController: _emailController,
+              aboutController: _aboutController,
+              passwordController: _passwordController,
+              isEditing: _isEditing,
             ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _emailController,
-              enabled: _isEditing,
-              decoration: InputDecoration(
-                labelText: localizations.translate('email'),
-                prefixIcon: Icon(Icons.email),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _aboutController,
-              enabled: _isEditing,
-              decoration: InputDecoration(
-                labelText: localizations.translate('about'),
-                prefixIcon: Icon(Icons.info),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            if (_isEditing) ...[
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: localizations.translate('newPasswordOptional'),
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-              ),
-              SizedBox(height: 24),
-            ],
-            ElevatedButton(
-              onPressed: () {
-                if (_isEditing) {
-                  _saveProfile();
-                } else {
-                  setState(() {
-                    _isEditing = true;
-                  });
-                }
+            const SizedBox(height: 24),
+            ProfileActions(
+              isEditing: _isEditing,
+              onSaveProfile: _saveProfile,
+              onEditProfile: () {
+                setState(() {
+                  _isEditing = true;
+                });
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Text(
-                _isEditing
-                    ? localizations.translate('saveChanges')
-                    : localizations.translate('editProfile'),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _logout,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Text(
-                localizations.translate('logout'),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              onLogout: _logout,
             ),
           ],
         ),
