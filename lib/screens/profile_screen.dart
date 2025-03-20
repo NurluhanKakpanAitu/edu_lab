@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:edu_lab/components/app_bar.dart';
 import 'package:edu_lab/components/bottom_navbar.dart';
 import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/file_service.dart';
 import 'package:edu_lab/services/user_service.dart';
-import 'package:edu_lab/utils/language_drop_down.dart';
+import 'package:edu_lab/components/language_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -136,15 +137,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     final localizations = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.translate('profile')),
-        actions: [
-          LanguageDropdown(
-            selectedLocale: _selectedLocale,
-            onLocaleChange: _changeLanguage,
-          ),
-          IconButton(icon: Icon(Icons.logout), onPressed: _logout),
-        ],
+      appBar: CustomAppBar(
+        title: 'EduLab',
+        selectedLocale: _selectedLocale,
+        onLocaleChange: _changeLanguage,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -257,6 +253,21 @@ class ProfileScreenState extends State<ProfileScreen> {
                 _isEditing
                     ? localizations.translate('saveChanges')
                     : localizations.translate('editProfile'),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _logout,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: Text(
+                localizations.translate('logout'),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),

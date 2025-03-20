@@ -18,5 +18,6 @@
   "home" : "Home",
   "discussions" : "Discussions",
   "goToCourse" : "Go to course",
-  "editProfile" : "Edit Profile"
+  "editProfile" : "Edit Profile",
+  "logout" : "Logout"
 }

@@ -1,11 +1,12 @@
 import 'package:edu_lab/app_localizations.dart';
+import 'package:edu_lab/components/app_bar.dart';
 import 'package:edu_lab/components/bottom_navbar.dart';
 import 'package:edu_lab/entities/course.dart';
 import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
-import 'package:edu_lab/utils/language_drop_down.dart';
+import 'package:edu_lab/components/language_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -70,20 +71,10 @@ class HomeScreenState extends State<HomeScreen> {
     final localizations = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'EduLab',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        elevation: 4,
-        actions: [
-          LanguageDropdown(
-            selectedLocale: _selectedLocale,
-            onLocaleChange: _changeLanguage,
-          ),
-        ],
+      appBar: CustomAppBar(
+        title: 'EduLab',
+        selectedLocale: _selectedLocale,
+        onLocaleChange: _changeLanguage,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -221,5 +212,10 @@ class HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomNavbar(locale: _selectedLocale.languageCode),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
