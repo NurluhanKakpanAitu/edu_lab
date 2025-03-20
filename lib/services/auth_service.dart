@@ -51,9 +51,13 @@ class AuthService {
 
   Future<ApiResponse> logout() async {
     try {
+      var token = await getToken();
       final response = await http.post(
         Uri.parse('$baseUrl/logout'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {

@@ -5,8 +5,9 @@ import 'screens/profile_screen.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/', // Указываем стартовую страницу
+
   routes: [
-    GoRoute(path: '/', builder: (context, state) => AuthScreen()),
+    GoRoute(path: '/', builder: (context, state) => HomeScreen()),
     GoRoute(path: '/home', builder: (context, state) => HomeScreen()),
     GoRoute(
       path: '/profile',

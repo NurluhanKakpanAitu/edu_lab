@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:edu_lab/components/bottom_navbar.dart';
-import 'package:edu_lab/entities/user_get_info.dart';
+import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/file_service.dart';
@@ -10,6 +10,7 @@ import 'package:edu_lab/utils/language_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     var response = await _authService.getUser();
-    var user = UserGetInfo.fromJson(response.data);
+    var user = User.fromJson(response.data);
     setState(() {
       _nicknameController.text = user.nickname;
       _emailController.text = user.email;
@@ -113,7 +114,13 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _logout() async {
-    await _authService.logout();
+    var response = await _authService.logout();
+    print(response.data);
+    print(response.errorMessage);
+    if (response.success) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('token');
+    }
     context.go('/auth');
   }
 

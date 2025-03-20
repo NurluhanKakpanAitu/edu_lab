@@ -1,7 +1,9 @@
 import 'package:edu_lab/app_localizations.dart';
 import 'package:edu_lab/components/bottom_navbar.dart';
 import 'package:edu_lab/entities/course.dart';
+import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/main.dart';
+import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:edu_lab/utils/language_drop_down.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +20,14 @@ class HomeScreenState extends State<HomeScreen> {
   late Locale _selectedLocale;
 
   var courseService = CourseService();
+  var authService = AuthService();
   List<Course> courses = [];
+  late User user;
 
   @override
   void initState() {
     super.initState();
+    _loadUserData();
     _loadCourses();
     _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
   }
@@ -34,6 +39,19 @@ class HomeScreenState extends State<HomeScreen> {
         response.data.forEach((course) {
           courses.add(Course.fromJson(course));
         });
+      });
+    } else {
+      context.go('/auth');
+    }
+  }
+
+  void _loadUserData() async {
+    var response = await authService.getUser();
+    print(response.data);
+    print(response.errorMessage);
+    if (response.success) {
+      setState(() {
+        user = User.fromJson(response.data);
       });
     } else {
       context.go('/auth');
