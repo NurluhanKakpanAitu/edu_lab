@@ -15,6 +15,11 @@ class MyApp extends StatefulWidget {
     state?.setLocale(newLocale);
   }
 
+  static Locale? getLocale(BuildContext context) {
+    MyAppState? state = context.findAncestorStateOfType<MyAppState>();
+    return state?._locale;
+  }
+
   @override
   MyAppState createState() => MyAppState();
 }

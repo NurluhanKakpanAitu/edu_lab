@@ -15,7 +15,7 @@ class AuthScreen extends StatefulWidget {
 class AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  Locale _selectedLocale = Locale('kk', '');
+  late Locale _selectedLocale;
   final AuthService _authService = AuthService();
   bool _isButtonEnabled = false;
 
@@ -31,6 +31,7 @@ class AuthScreenState extends State<AuthScreen> {
     super.initState();
     _emailController.addListener(_updateButtonState);
     _passwordController.addListener(_updateButtonState);
+    _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
   }
 
   void _updateButtonState() {

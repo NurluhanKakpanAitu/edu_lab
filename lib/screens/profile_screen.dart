@@ -31,11 +31,12 @@ class ProfileScreenState extends State<ProfileScreen> {
   final UserService _userService = UserService();
   final FileService _fileService = FileService();
   late String currentUserId;
-  Locale _selectedLocale = Locale('en', '');
+  late Locale _selectedLocale;
 
   @override
   void initState() {
     super.initState();
+    _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
     _loadUserData();
   }
 

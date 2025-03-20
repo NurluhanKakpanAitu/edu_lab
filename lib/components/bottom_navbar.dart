@@ -12,25 +12,22 @@ class BottomNavbar extends StatefulWidget {
 }
 
 class BottomNavbarState extends State<BottomNavbar> {
-  int currentIndex = 0;
-
-  void setCurrentIndex(int index) {
-    setState(() {
-      currentIndex = index;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.locale == 'kk') {
-      currentIndex = 1;
+  int _getCurrentIndex(BuildContext context) {
+    final String location =
+        GoRouter.of(context).routerDelegate.currentConfiguration.fullPath;
+    if (location.startsWith('/profile')) {
+      return 1;
+    } else if (location.startsWith('/discussion')) {
+      return 2;
+    } else {
+      return 0; // Default to home
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final currentIndex = _getCurrentIndex(context);
 
     return BottomNavigationBar(
       items: <BottomNavigationBarItem>[
@@ -52,13 +49,10 @@ class BottomNavbarState extends State<BottomNavbar> {
       onTap: (index) {
         if (index == 1) {
           context.go('/profile');
-          setCurrentIndex(index);
         } else if (index == 2) {
           context.go('/discussion');
-          setCurrentIndex(index);
         } else {
           context.go('/home');
-          setCurrentIndex(index);
         }
       },
     );

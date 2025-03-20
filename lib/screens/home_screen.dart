@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  Locale _selectedLocale = Locale('kk', '');
+  late Locale _selectedLocale;
 
   var courseService = CourseService();
   List<Course> courses = [];
@@ -24,6 +24,7 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadCourses();
+    _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
   }
 
   void _loadCourses() async {

@@ -21,7 +21,6 @@ class LanguageDropdownState extends State<LanguageDropdown> {
   Widget build(BuildContext context) {
     return DropdownButton<Locale>(
       value: widget.selectedLocale,
-      // icon: Icon(Icons.language_sharp, color: Colors.black),
       dropdownColor: widget.color,
       onChanged: (Locale? newValue) {
         if (newValue != null) {
