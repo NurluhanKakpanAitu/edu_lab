@@ -42,6 +42,40 @@ class AuthScreenState extends State<AuthScreen> {
     });
   }
 
+  void _login() async {
+    final response = await _authService.login(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    if (!mounted) return;
+
+    if (response.success == true) {
+      context.go('/home');
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(response.errorMessage ?? '')));
+    }
+  }
+
+  void _register() async {
+    final response = await _authService.register(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    if (!mounted) return;
+
+    if (response.success == true) {
+      context.go('/home');
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(response.errorMessage ?? '')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -86,24 +120,7 @@ class AuthScreenState extends State<AuthScreen> {
             ),
             SizedBox(height: 24.0),
             ElevatedButton(
-              onPressed:
-                  _isButtonEnabled
-                      ? () async {
-                        final response = await _authService.login(
-                          _emailController.text,
-                          _passwordController.text,
-                        );
-                        if (response.success == true) {
-                          context.go('/home');
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(response.errorMessage ?? ''),
-                            ),
-                          );
-                        }
-                      }
-                      : null,
+              onPressed: _isButtonEnabled ? _login : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 30, 151, 139),
                 shape: RoundedRectangleBorder(
@@ -123,24 +140,7 @@ class AuthScreenState extends State<AuthScreen> {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed:
-                  _isButtonEnabled
-                      ? () async {
-                        final response = await _authService.register(
-                          _emailController.text,
-                          _passwordController.text,
-                        );
-                        if (response.success == true) {
-                          context.go('/home');
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(response.errorMessage ?? ''),
-                            ),
-                          );
-                        }
-                      }
-                      : null,
+              onPressed: _isButtonEnabled ? _register : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 39, 96, 219),
                 shape: RoundedRectangleBorder(
