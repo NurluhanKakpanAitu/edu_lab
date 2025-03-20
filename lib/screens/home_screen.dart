@@ -6,7 +6,6 @@ import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
-import 'package:edu_lab/components/language_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
