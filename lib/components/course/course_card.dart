@@ -1,3 +1,4 @@
+import 'package:edu_lab/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:edu_lab/entities/course.dart';
 
@@ -15,6 +16,7 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     var courseTitle =
         course.title?.getTranslation(locale.languageCode) ?? 'No Title';
     var courseDescription =
@@ -79,7 +81,7 @@ class CourseCard extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Go to Course',
+                  localizations.translate('goToCourse'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
