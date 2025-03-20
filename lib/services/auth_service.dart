@@ -4,8 +4,6 @@ import 'package:edu_lab/entities/token.dart';
 import 'package:edu_lab/utils/api_client.dart';
 import 'package:edu_lab/utils/response.dart';
 import 'package:edu_lab/utils/token_storage.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   var apiClient = ApiClient();
@@ -19,7 +17,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        var apiResponse = ApiResponse.fromJson(json.decode(response.data));
+        var apiResponse = ApiResponse.fromJson(response.data);
         var token = Token.fromJson(apiResponse.data);
         TokenStorage.saveTokens(token);
         return apiResponse;
@@ -40,7 +38,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        var apiResponse = ApiResponse.fromJson(json.decode(response.data));
+        var apiResponse = ApiResponse.fromJson(response.data);
         var token = Token.fromJson(apiResponse.data);
         TokenStorage.saveTokens(token);
         return apiResponse;
@@ -48,61 +46,40 @@ class AuthService {
         return ApiResponse.fromError('Failed to register');
       }
     } catch (e) {
-      rethrow;
+      return ApiResponse.fromError('Failed to register');
     }
   }
 
   Future<ApiResponse> logout() async {
     try {
-      var token = await getToken();
-
       final response = await apiClient.dio.post(
         '/Auth/logout', // Replace with your logout endpoint
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token', // Add the Bearer token here
-          },
-        ),
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
       if (response.statusCode == 200) {
         TokenStorage.clearTokens();
-        return ApiResponse.fromJson(json.decode(response.data));
+        return ApiResponse.fromJson(response.data);
       } else {
         return ApiResponse.fromError('Failed to logout');
       }
     } catch (e) {
-      rethrow;
+      return ApiResponse.fromError('Failed to logout');
     }
   }
 
   Future<ApiResponse> getUser() async {
     try {
-      var token = await getToken();
-      final response = await apiClient.dio.post(
-        '/Auth/get-info', // Replace with your logout endpoint
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token', // Add the Bearer token here
-          },
-        ),
+      final response = await apiClient.dio.get(
+        '/Auth/get-info',
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
       if (response.statusCode == 200) {
-        return ApiResponse.fromJson(json.decode(response.data));
+        return ApiResponse.fromJson(response.data);
       } else {
         return ApiResponse.fromError('Failed to get user info');
       }
     } catch (e) {
-      rethrow;
+      return ApiResponse.fromError('Failed to get user info');
     }
-  }
-
-  Future<String> getToken() async {
-    var token = await TokenStorage.getAccessToken();
-    if (token == null) {
-      throw Exception('Token is null');
-    }
-    return token;
   }
 }

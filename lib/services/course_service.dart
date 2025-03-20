@@ -1,17 +1,15 @@
-import 'dart:convert';
-
+import 'package:edu_lab/utils/api_client.dart';
 import 'package:edu_lab/utils/response.dart';
-import 'package:http/http.dart' as http;
 
 class CourseService {
-  final String baseUrl = 'http://localhost:5148/api/Course';
+  var apiClient = ApiClient();
 
   Future<ApiResponse> getCourses() async {
     try {
-      var response = await http.get(Uri.parse('$baseUrl/all'));
+      var response = await apiClient.dio.get('/Course/all');
 
       if (response.statusCode == 200) {
-        return ApiResponse.fromJson(json.decode(response.body));
+        return ApiResponse.fromJson(response.data);
       } else {
         return ApiResponse.fromError('Failed to fetch courses');
       }
