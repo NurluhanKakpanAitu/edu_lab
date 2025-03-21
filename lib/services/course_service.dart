@@ -17,4 +17,18 @@ class CourseService {
       return ApiResponse.fromError('Failed to fetch courses');
     }
   }
+
+  Future<ApiResponse> getCourse(String id) async {
+    try {
+      var response = await apiClient.dio.get('/Course/$id');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to fetch course');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to fetch course');
+    }
+  }
 }

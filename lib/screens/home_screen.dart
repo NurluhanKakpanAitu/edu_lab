@@ -3,7 +3,7 @@ import 'package:edu_lab/components/course/course_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/bottom_navbar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
-import 'package:edu_lab/entities/course.dart';
+import 'package:edu_lab/entities/course/course.dart';
 import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:edu_lab/entities/course.dart';
+import 'package:edu_lab/entities/course/course.dart';
+import 'package:go_router/go_router.dart';
 import 'course_card.dart';
 
 class CourseList extends StatelessWidget {
@@ -19,7 +20,7 @@ class CourseList extends StatelessWidget {
           course: courses[index],
           locale: locale,
           onGoToCourse: () {
-            // Handle navigation to course details
+            context.go('/course/${courses[index].id}');
           },
         );
       },

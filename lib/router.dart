@@ -1,4 +1,5 @@
 import 'package:edu_lab/screens/auth_screen.dart';
+import 'package:edu_lab/screens/course_screen.dart';
 import 'package:edu_lab/screens/home_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/profile_screen.dart';
@@ -14,5 +15,14 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const ProfileScreen(),
     ),
     GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
+    GoRoute(
+      path: '/course/:id', // Route for CourseScreen
+      builder: (context, state) {
+        final courseId = state.pathParameters['id']!;
+        return CourseScreen(
+          courseId: courseId,
+        ); // Pass the course ID to the screen
+      },
+    ),
   ],
 );

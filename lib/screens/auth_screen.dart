@@ -53,9 +53,14 @@ class AuthScreenState extends State<AuthScreen> {
     if (response.success == true) {
       context.go('/home');
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(response.errorMessage ?? '')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              response.errorMessage != null
+                  ? Text("${response.errorMessage}")
+                  : Text('Failed to login'),
+        ),
+      );
     }
   }
 

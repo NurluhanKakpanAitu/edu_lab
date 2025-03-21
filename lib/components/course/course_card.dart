@@ -1,6 +1,6 @@
 import 'package:edu_lab/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:edu_lab/entities/course.dart';
+import 'package:edu_lab/entities/course/course.dart';
 
 class CourseCard extends StatelessWidget {
   final Course course;

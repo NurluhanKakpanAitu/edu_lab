@@ -22,10 +22,10 @@ class AuthService {
         TokenStorage.saveTokens(token);
         return apiResponse;
       } else {
-        return ApiResponse.fromError('Failed to login');
+        return ApiResponse.fromError('loginFailed');
       }
     } catch (e) {
-      rethrow;
+      return ApiResponse.fromError('loginFailed');
     }
   }
 
