@@ -30,5 +30,9 @@
   "cancel": "Отмена",
   "submit": "Отправить",
   "reviewCannotBeEmpty": "Отзыв не может быть пустым.",
-  "reviewSubmitted": "Спасибо за ваш отзыв!"
+  "reviewSubmitted": "Спасибо за ваш отзыв!",
+  "codeEditor": "Редактор кода",
+  "codeEditorHint": "Напишите ваш код здесь...",
+  "codeSubmitted" : "Код отправлен",
+  "submitCode": "Отправить код"
 }

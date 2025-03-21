@@ -28,5 +28,9 @@
   "cancel": "Бас тарту",
   "submit": "Жіберу",
   "reviewCannotBeEmpty": "Пікір бос болмауы керек.",
-  "reviewSubmitted": "Пікіріңіз үшін рахмет!"
+  "reviewSubmitted": "Пікіріңіз үшін рахмет!",
+  "codeEditor": "Код редакторы",
+  "codeEditorHint": "Кодты осында жазыңыз...",
+  "codeSubmitted" : "Код жіберілді",
+  "submitCode": "Кодты жіберу"
 }

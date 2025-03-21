@@ -30,5 +30,9 @@
   "cancel": "Cancel",
   "submit": "Submit",
   "reviewCannotBeEmpty": "Review cannot be empty.",
-  "reviewSubmitted": "Thank you for your review!"
+  "reviewSubmitted": "Thank you for your review!",
+  "codeEditor": "Code Editor",
+  "codeEditorHint": "Write your code here...",
+  "codeSubmitted" : "Code submitted",
+  "submitCode": "Submit Code"
 }
