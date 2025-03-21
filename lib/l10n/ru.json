@@ -24,5 +24,11 @@
   "collapse" : "Свернуть",
   "expand" : "Развернуть",
   "openVideoLink" : "Открыть видео-ссылку",
-  "goToTasks" : "Перейти к заданиям"
+  "goToTasks" : "Перейти к заданиям",
+  "writeReview": "Написать отзыв",
+  "enterYourReview": "Введите ваш отзыв здесь...",
+  "cancel": "Отмена",
+  "submit": "Отправить",
+  "reviewCannotBeEmpty": "Отзыв не может быть пустым.",
+  "reviewSubmitted": "Спасибо за ваш отзыв!"
 }

@@ -22,5 +22,11 @@
   "logout" : "Шығу",
   "modules" : "Модульдер",
   "openVideoLink" : "Видео сілтемесін ашу",
-  "goToTasks" : "Тапсырмаларға өту"
+  "goToTasks" : "Тапсырмаларға өту",
+  "writeReview": "Пікір жазу",
+  "enterYourReview": "Мұнда пікіріңізді енгізіңіз...",
+  "cancel": "Бас тарту",
+  "submit": "Жіберу",
+  "reviewCannotBeEmpty": "Пікір бос болмауы керек.",
+  "reviewSubmitted": "Пікіріңіз үшін рахмет!"
 }

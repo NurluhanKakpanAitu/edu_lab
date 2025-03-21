@@ -1,6 +1,7 @@
 import 'package:edu_lab/screens/auth_screen.dart';
 import 'package:edu_lab/screens/course_screen.dart';
 import 'package:edu_lab/screens/home_screen.dart';
+import 'package:edu_lab/screens/test_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/profile_screen.dart';
 
@@ -22,6 +23,14 @@ final GoRouter router = GoRouter(
         return CourseScreen(
           courseId: courseId,
         ); // Pass the course ID to the screen
+      },
+    ),
+    GoRoute(
+      path: '/module/:courseId/test/:moduleId', // Route for TestScreen
+      builder: (context, state) {
+        final moduleId = state.pathParameters['moduleId']!;
+        final courseId = state.pathParameters['courseId']!;
+        return TestScreen(moduleId: moduleId, courseId: courseId);
       },
     ),
   ],
