@@ -79,7 +79,6 @@ class TestScreenState extends State<TestScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-
     return Scaffold(
       appBar: CustomAppBar(
         title: 'EduLab',
@@ -88,6 +87,7 @@ class TestScreenState extends State<TestScreen> {
           setState(() {
             locale = newLocale;
           });
+          MyApp.setLocale(context, newLocale);
         },
         onBackButtonPressed: () {
           context.go('/course/${widget.courseId}');
@@ -159,7 +159,7 @@ class TestScreenState extends State<TestScreen> {
                           ),
                         ),
                         child: Text(
-                          localizations.translate('submitTest'),
+                          localizations.translate('submit'),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -232,7 +232,7 @@ class TestScreenState extends State<TestScreen> {
                           ),
                         ),
                         child: Text(
-                          localizations.translate('submitCode'),
+                          localizations.translate('submit'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
