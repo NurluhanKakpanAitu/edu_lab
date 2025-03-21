@@ -116,6 +116,7 @@ class CourseScreenState extends State<CourseScreen> {
                       onGoToTasks: (moduleId) {
                         context.go('/tests/$moduleId');
                       },
+                      locale: _selectedLocale,
                     ),
                   ],
                 ),

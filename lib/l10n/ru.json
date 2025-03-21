@@ -19,5 +19,10 @@
   "discussions" : "Обсуждения",
   "goToCourse" : "Перейти к курсу",
   "editProfile" : "Редактировать профиль",
-  "logout" : "Выйти"
+  "logout" : "Выйти",
+  "modules" : "Модули",
+  "collapse" : "Свернуть",
+  "expand" : "Развернуть",
+  "openVideoLink" : "Открыть видео-ссылку",
+  "goToTasks" : "Перейти к заданиям"
 }

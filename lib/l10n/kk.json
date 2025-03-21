@@ -19,5 +19,8 @@
   "discussions" : "Талқылаулар",
   "goToCourse"  : "Курсқа өту",
   "editProfile" : "Профильді өзгерту",
-  "logout" : "Шығу"
+  "logout" : "Шығу",
+  "modules" : "Модульдер",
+  "openVideoLink" : "Видео сілтемесін ашу",
+  "goToTasks" : "Тапсырмаларға өту"
 }

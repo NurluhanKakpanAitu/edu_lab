@@ -50,13 +50,12 @@ class ModuleCard extends StatelessWidget {
                     overflow: TextOverflow.visible,
                   ),
                 ),
-                TextButton(
-                  onPressed: onToggleExpand,
-                  child: Text(
-                    isExpanded
-                        ? localizations.translate('collapse')
-                        : localizations.translate('expand'),
+                IconButton(
+                  icon: Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: Colors.blue,
                   ),
+                  onPressed: onToggleExpand,
                 ),
               ],
             ),
@@ -84,8 +83,6 @@ class ModuleCard extends StatelessWidget {
                     : VideoPlayerWidget(videoUrl: videoPath!),
 
               const SizedBox(height: 20),
-
-              // Go to Tasks Button
               ElevatedButton(
                 onPressed: onGoToTasks,
                 style: ElevatedButton.styleFrom(

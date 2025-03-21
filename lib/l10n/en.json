@@ -19,5 +19,10 @@
   "discussions" : "Discussions",
   "goToCourse" : "Go to course",
   "editProfile" : "Edit Profile",
-  "logout" : "Logout"
+  "logout" : "Logout",
+  "modules" : "Modules",
+  "collapse" : "Collapse",
+  "expand" : "Expand",
+  "openVideoLink" : "Open Video Link",
+  "goToTasks" : "Go to tasks"
 }

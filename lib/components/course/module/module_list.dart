@@ -7,6 +7,7 @@ class ModuleList extends StatelessWidget {
   final Map<String, bool> expandedModules;
   final Function(String) onToggleExpand;
   final Function(String) onGoToTasks;
+  final Locale locale;
 
   const ModuleList({
     super.key,
@@ -14,6 +15,7 @@ class ModuleList extends StatelessWidget {
     required this.expandedModules,
     required this.onToggleExpand,
     required this.onGoToTasks,
+    required this.locale,
   });
 
   @override
@@ -29,14 +31,9 @@ class ModuleList extends StatelessWidget {
         return ModuleCard(
           id: module.id,
           title:
-              module.title?.getTranslation(
-                Localizations.localeOf(context).languageCode,
-              ) ??
-              'No Title',
+              module.title?.getTranslation(locale.languageCode) ?? 'No Title',
           description:
-              module.description?.getTranslation(
-                Localizations.localeOf(context).languageCode,
-              ) ??
+              module.description?.getTranslation(locale.languageCode) ??
               'No Description',
           videoPath: module.videoPath,
           isExpanded: isExpanded,
