@@ -1,12 +1,16 @@
+import 'package:edu_lab/app_localizations.dart';
+import 'package:edu_lab/entities/test/test_result.dart';
 import 'package:flutter/material.dart';
 import 'package:edu_lab/entities/test/test.dart';
 
 class TestComponent extends StatelessWidget {
   final Test test;
   final Locale locale;
-  final Map<String, String> selectedAnswers;
-  final Function(String questionId, String answerId) onAnswerSelected;
+  final List<TestResult> selectedAnswers;
+  final Function(String questionId, String answerId, bool isCorrect)
+  onAnswerSelected;
   final VoidCallback onSubmit;
+  final bool blockSubmit;
 
   const TestComponent({
     super.key,
@@ -15,10 +19,12 @@ class TestComponent extends StatelessWidget {
     required this.selectedAnswers,
     required this.onAnswerSelected,
     required this.onSubmit,
+    required this.blockSubmit,
   });
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -44,10 +50,22 @@ class TestComponent extends StatelessWidget {
                         'No Answer',
                   ),
                   value: answer.id,
-                  groupValue: selectedAnswers[question.id],
+                  groupValue:
+                      selectedAnswers
+                          .firstWhere(
+                            (selectedAnswer) =>
+                                selectedAnswer.questionId == question.id,
+                            orElse:
+                                () => TestResult(
+                                  questionId: question.id,
+                                  answerId: '',
+                                  isCorrect: false,
+                                ),
+                          )
+                          .answerId,
                   onChanged: (value) {
                     if (value != null) {
-                      onAnswerSelected(question.id, value);
+                      onAnswerSelected(question.id, value, answer.isCorrect);
                     }
                   },
                 );
@@ -58,7 +76,7 @@ class TestComponent extends StatelessWidget {
         }),
         const SizedBox(height: 24),
         ElevatedButton(
-          onPressed: onSubmit,
+          onPressed: blockSubmit ? null : onSubmit,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -66,8 +84,8 @@ class TestComponent extends StatelessWidget {
               borderRadius: BorderRadius.circular(8.0),
             ),
           ),
-          child: const Text(
-            'Submit',
+          child: Text(
+            localizations.translate('submit'),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

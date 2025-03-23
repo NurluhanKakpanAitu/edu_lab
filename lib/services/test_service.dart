@@ -1,3 +1,4 @@
+import 'package:edu_lab/entities/test/test_result.dart';
 import 'package:edu_lab/utils/api_client.dart';
 import 'package:edu_lab/utils/response.dart';
 
@@ -48,6 +49,28 @@ class TestService {
       }
     } catch (e) {
       return ApiResponse.fromError('Failed to submit practice work');
+    }
+  }
+
+  Future<ApiResponse> submitTest(
+    String testId,
+    List<TestResult> answers,
+  ) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/Test/test-result',
+        data: {
+          'testId': testId,
+          'results': answers.map((e) => e.toJson()).toList(),
+        },
+      );
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to submit test');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to submit test');
     }
   }
 }

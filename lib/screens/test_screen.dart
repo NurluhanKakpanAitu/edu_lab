@@ -2,9 +2,12 @@ import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/test/practice_work_component.dart';
 import 'package:edu_lab/components/test/practice_work_result.dart';
 import 'package:edu_lab/components/test/test_component.dart';
+import 'package:edu_lab/components/test/user_test_result_component.dart';
 import 'package:edu_lab/entities/test/practice_work.dart';
 import 'package:edu_lab/entities/test/practice_work_result.dart';
 import 'package:edu_lab/entities/test/test.dart';
+import 'package:edu_lab/entities/test/test_result.dart';
+import 'package:edu_lab/entities/test/user_test_result.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/test_service.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +28,14 @@ class TestScreenState extends State<TestScreen> {
   bool _isLoading = true;
   Test? _test;
   PracticeWork? _practiceWork;
-  final Map<String, String> _selectedAnswers = {};
+  final List<TestResult> _selectedAnswers = [];
   final TextEditingController _codeController = TextEditingController();
   final testService = TestService();
   late Locale locale;
   PracticeWorkResult? practiceWorkResult;
   bool isLoadedPracticeWork = false;
+  UserTestResult? userTestResult;
+  bool blockSubmit = false;
 
   @override
   void initState() {
@@ -67,7 +72,7 @@ class TestScreenState extends State<TestScreen> {
     }
   }
 
-  void _submitTest() {
+  void _submitTest() async {
     if (_test == null) return;
 
     if (_selectedAnswers.length < _test!.questions.length) {
@@ -76,6 +81,22 @@ class TestScreenState extends State<TestScreen> {
       ).showSnackBar(SnackBar(content: Text('Please answer all questions')));
       return;
     }
+
+    var apiResponse = await testService.submitTest(_test!.id, _selectedAnswers);
+
+    if (!mounted) return;
+
+    if (!apiResponse.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(apiResponse.errorMessage ?? 'Failed to submit')),
+      );
+      return;
+    }
+
+    setState(() {
+      userTestResult = UserTestResult.fromJson(apiResponse.data);
+      blockSubmit = true;
+    });
 
     ScaffoldMessenger.of(
       context,
@@ -150,13 +171,31 @@ class TestScreenState extends State<TestScreen> {
                         test: _test!,
                         locale: locale,
                         selectedAnswers: _selectedAnswers,
-                        onAnswerSelected: (questionId, answerId) {
+                        onAnswerSelected: (questionId, answerId, isCorrect) {
                           setState(() {
-                            _selectedAnswers[questionId] = answerId;
+                            if (_selectedAnswers.any(
+                              (e) => e.questionId == questionId,
+                            )) {
+                              _selectedAnswers.removeWhere(
+                                (e) => e.questionId == questionId,
+                              );
+                            }
+                            _selectedAnswers.add(
+                              TestResult(
+                                questionId: questionId,
+                                answerId: answerId,
+                                isCorrect: isCorrect,
+                              ),
+                            );
                           });
                         },
                         onSubmit: _submitTest,
+                        blockSubmit: blockSubmit,
                       ),
+                    if (userTestResult != null)
+                      UserTestResultComponent(userTestResult: userTestResult!),
+
+                    const SizedBox(height: 30),
                     if (_practiceWork != null) ...[
                       PracticeWorkComponent(
                         practiceWork: _practiceWork!,

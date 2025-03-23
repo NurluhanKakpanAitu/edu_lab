@@ -23,7 +23,6 @@ class PracticeWorkComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the CodeController with the current text in codeController
     final codeEditorController = CodeController(
       text: codeController.text.isEmpty ? '' : codeController.text,
       language: python,
@@ -40,7 +39,7 @@ class PracticeWorkComponent extends StatelessWidget {
                   'No Title',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             Text(
               practiceWork.description.getTranslation(locale.languageCode) ??
                   'No Description',
