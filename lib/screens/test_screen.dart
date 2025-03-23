@@ -30,6 +30,7 @@ class TestScreenState extends State<TestScreen> {
   final testService = TestService();
   late Locale locale;
   PracticeWorkResult? practiceWorkResult;
+  bool isLoadedPracticeWork = false;
 
   @override
   void initState() {
@@ -91,7 +92,7 @@ class TestScreenState extends State<TestScreen> {
     }
 
     setState(() {
-      _isLoading = true;
+      isLoadedPracticeWork = true;
     });
     var apiResponse = await testService.submitPracticeWork(
       _practiceWork?.id ?? '',
@@ -99,7 +100,7 @@ class TestScreenState extends State<TestScreen> {
     );
 
     setState(() {
-      _isLoading = false;
+      isLoadedPracticeWork = false;
     });
 
     if (!apiResponse.success) {
@@ -162,6 +163,7 @@ class TestScreenState extends State<TestScreen> {
                         locale: locale,
                         codeController: _codeController,
                         onSubmit: _submitPracticeWork,
+                        isLoaded: isLoadedPracticeWork,
                       ),
                       if (practiceWorkResult != null)
                         PracticeWorkResultComponent(
