@@ -12,6 +12,7 @@ import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/test_service.dart';
 import 'package:flutter/material.dart';
 import 'package:edu_lab/app_localizations.dart';
+import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:go_router/go_router.dart';
 
 class TestScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class TestScreenState extends State<TestScreen> {
   Test? _test;
   PracticeWork? _practiceWork;
   final List<TestResult> _selectedAnswers = [];
-  final TextEditingController _codeController = TextEditingController();
+  final CodeController _codeController = CodeController();
   final testService = TestService();
   late Locale locale;
   PracticeWorkResult? practiceWorkResult;

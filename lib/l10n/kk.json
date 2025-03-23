@@ -32,5 +32,7 @@
   "codeEditor": "Код редакторы",
   "codeEditorHint": "Кодты осында жазыңыз...",
   "codeSubmitted" : "Код жіберілді",
-  "submitCode": "Кодты жіберу"
+  "submitCode": "Кодты жіберу",
+  "testResult": "Тест нәтижесі",
+  "score": "Балл"
 }

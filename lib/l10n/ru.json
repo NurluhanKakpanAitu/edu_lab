@@ -34,5 +34,7 @@
   "codeEditor": "Редактор кода",
   "codeEditorHint": "Напишите ваш код здесь...",
   "codeSubmitted" : "Код отправлен",
-  "submitCode": "Отправить код"
+  "submitCode": "Отправить код",
+  "testResult": "Результат теста",
+  "score": "Балл"
 }

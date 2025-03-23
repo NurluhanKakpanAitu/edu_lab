@@ -5,10 +5,10 @@ import 'package:edu_lab/entities/test/practice_work.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart'; // Ensure this is present
 import 'package:highlight/languages/python.dart'; // For Python syntax highlighting
 
-class PracticeWorkComponent extends StatelessWidget {
+class PracticeWorkComponent extends StatefulWidget {
   final PracticeWork practiceWork;
   final Locale locale;
-  final TextEditingController codeController;
+  final CodeController codeController;
   final VoidCallback onSubmit;
   final bool isLoaded;
 
@@ -22,26 +22,50 @@ class PracticeWorkComponent extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final codeEditorController = CodeController(
-      text: codeController.text.isEmpty ? '' : codeController.text,
+  State<PracticeWorkComponent> createState() => _PracticeWorkComponentState();
+}
+
+class _PracticeWorkComponentState extends State<PracticeWorkComponent> {
+  late CodeController codeEditorController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the CodeController with the current text in the codeController
+    codeEditorController = CodeController(
+      text:
+          widget.codeController.text.isEmpty ? '' : widget.codeController.text,
       language: python,
     );
+  }
 
+  @override
+  void dispose() {
+    // Dispose of the CodeController
+    codeEditorController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
-    return !isLoaded
+    return !widget.isLoaded
         ? Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              practiceWork.title.getTranslation(locale.languageCode) ??
+              widget.practiceWork.title.getTranslation(
+                    widget.locale.languageCode,
+                  ) ??
                   'No Title',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Text(
-              practiceWork.description.getTranslation(locale.languageCode) ??
+              widget.practiceWork.description.getTranslation(
+                    widget.locale.languageCode,
+                  ) ??
                   'No Description',
               style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
@@ -61,7 +85,7 @@ class PracticeWorkComponent extends StatelessWidget {
                 controller: codeEditorController,
                 expands: true,
                 onChanged: (value) {
-                  codeController.text = value;
+                  widget.codeController.text = value;
                 },
                 textStyle: const TextStyle(fontSize: 14, color: Colors.white),
                 decoration: const BoxDecoration(
@@ -71,7 +95,7 @@ class PracticeWorkComponent extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: onSubmit,
+              onPressed: widget.onSubmit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 padding: const EdgeInsets.symmetric(
@@ -94,5 +118,19 @@ class PracticeWorkComponent extends StatelessWidget {
           ],
         )
         : LoadingIndicator();
+  }
+
+  @override
+  void didUpdateWidget(covariant PracticeWorkComponent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update the CodeController with the new text in the codeController
+    codeEditorController.text = widget.codeController.text;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Update the CodeController with the new language
+    codeEditorController.language = python;
   }
 }

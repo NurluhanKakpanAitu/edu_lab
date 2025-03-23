@@ -34,5 +34,7 @@
   "codeEditor": "Code Editor",
   "codeEditorHint": "Write your code here...",
   "codeSubmitted" : "Code submitted",
-  "submitCode": "Submit Code"
+  "submitCode": "Submit Code",
+  "testResult": "Test Result",
+  "score": "Score"
 }
