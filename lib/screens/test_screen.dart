@@ -1,5 +1,9 @@
 import 'package:edu_lab/components/shared/app_bar.dart';
+import 'package:edu_lab/components/test/practice_work_component.dart';
+import 'package:edu_lab/components/test/practice_work_result.dart';
+import 'package:edu_lab/components/test/test_component.dart';
 import 'package:edu_lab/entities/test/practice_work.dart';
+import 'package:edu_lab/entities/test/practice_work_result.dart';
 import 'package:edu_lab/entities/test/test.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/test_service.dart';
@@ -19,11 +23,13 @@ class TestScreen extends StatefulWidget {
 
 class TestScreenState extends State<TestScreen> {
   bool _isLoading = true;
-  Test? _test; // Single test
-  PracticeWork? _practiceWork; // Practice work
+  Test? _test;
+  PracticeWork? _practiceWork;
   final Map<String, String> _selectedAnswers = {};
+  final TextEditingController _codeController = TextEditingController();
   final testService = TestService();
   late Locale locale;
+  PracticeWorkResult? practiceWorkResult;
 
   @override
   void initState() {
@@ -38,13 +44,11 @@ class TestScreenState extends State<TestScreen> {
     });
 
     try {
-      // Load test
       var testResponse = await testService.getTestsByModuleId(widget.moduleId);
       if (testResponse.success && testResponse.data.isNotEmpty) {
         _test = Test.fromJson(testResponse.data.first);
       }
 
-      // Load practice work
       var practiceResponse = await testService.getPracticeWork(widget.moduleId);
       if (practiceResponse.success) {
         _practiceWork = PracticeWork.fromJson(practiceResponse.data);
@@ -71,14 +75,53 @@ class TestScreenState extends State<TestScreen> {
       ).showSnackBar(SnackBar(content: Text('Please answer all questions')));
       return;
     }
+
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Test submitted successfully!')));
   }
 
+  void _submitPracticeWork() async {
+    final code = _codeController.text;
+    if (code.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Code cannot be empty')));
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+    var apiResponse = await testService.submitPracticeWork(
+      _practiceWork?.id ?? '',
+      code,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (!apiResponse.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(apiResponse.errorMessage ?? 'Failed to submit')),
+      );
+      return;
+    }
+
+    setState(() {
+      practiceWorkResult = PracticeWorkResult.fromJson(apiResponse.data);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Practice work submitted successfully!')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    AppLocalizations.of(context);
+
     return Scaffold(
       appBar: CustomAppBar(
         title: 'EduLab',
@@ -101,145 +144,29 @@ class TestScreenState extends State<TestScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (_test != null) ...[
-                      // Display Test
-                      Text(
-                        _test!.title.getTranslation(locale.languageCode) ??
-                            'No Title',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ..._test!.questions.map((question) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              question.title.getTranslation(
-                                    locale.languageCode,
-                                  ) ??
-                                  'No Question',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(height: 8),
-                            ...question.answers.map((answer) {
-                              return RadioListTile<String>(
-                                title: Text(
-                                  answer.title.getTranslation(
-                                        locale.languageCode,
-                                      ) ??
-                                      'No Answer',
-                                ),
-                                value: answer.id,
-                                groupValue: _selectedAnswers[question.id],
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedAnswers[question.id] = value!;
-                                  });
-                                },
-                              );
-                            }),
-                            const SizedBox(height: 16),
-                          ],
-                        );
-                      }),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: _submitTest,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: Text(
-                          localizations.translate('submit'),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const Divider(),
-                    ],
-                    const SizedBox(height: 16),
-                    if (_practiceWork != null) ...[
-                      // Display Practice Work
-                      Text(
-                        _practiceWork!.title.getTranslation(
-                              locale.languageCode,
-                            ) ??
-                            'No Title',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      Text(
-                        _practiceWork!.description.getTranslation(
-                              locale.languageCode,
-                            ) ??
-                            'No Description',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        localizations.translate('codeEditor'),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        maxLines: 10,
-                        decoration: InputDecoration(
-                          hintText: localizations.translate('codeEditorHint'),
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (value) {},
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                localizations.translate('codeSubmitted'),
-                              ),
-                            ),
-                          );
+                    if (_test != null)
+                      TestComponent(
+                        test: _test!,
+                        locale: locale,
+                        selectedAnswers: _selectedAnswers,
+                        onAnswerSelected: (questionId, answerId) {
+                          setState(() {
+                            _selectedAnswers[questionId] = answerId;
+                          });
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: Text(
-                          localizations.translate('submit'),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+                        onSubmit: _submitTest,
                       ),
+                    if (_practiceWork != null) ...[
+                      PracticeWorkComponent(
+                        practiceWork: _practiceWork!,
+                        locale: locale,
+                        codeController: _codeController,
+                        onSubmit: _submitPracticeWork,
+                      ),
+                      if (practiceWorkResult != null)
+                        PracticeWorkResultComponent(
+                          practiceWorkResult: practiceWorkResult!,
+                        ),
                     ],
                   ],
                 ),

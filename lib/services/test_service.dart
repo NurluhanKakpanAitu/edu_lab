@@ -31,4 +31,23 @@ class TestService {
       return ApiResponse.fromError('Failed to fetch practice work');
     }
   }
+
+  Future<ApiResponse> submitPracticeWork(
+    String practiceWorkId,
+    String code,
+  ) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/Test/practice-work-result',
+        data: {'code': code, 'practiceWorkId': practiceWorkId},
+      );
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to submit practice work');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to submit practice work');
+    }
+  }
 }
