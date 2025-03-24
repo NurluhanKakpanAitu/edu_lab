@@ -17,8 +17,6 @@ class BottomNavbarState extends State<BottomNavbar> {
         GoRouter.of(context).routerDelegate.currentConfiguration.fullPath;
     if (location.startsWith('/profile')) {
       return 1;
-    } else if (location.startsWith('/discussion')) {
-      return 2;
     } else {
       return 0; // Default to home
     }
@@ -39,18 +37,12 @@ class BottomNavbarState extends State<BottomNavbar> {
           icon: Icon(Icons.person),
           label: localizations.translate('profile'),
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat),
-          label: localizations.translate('discussions'),
-        ),
       ],
       currentIndex: currentIndex,
       selectedItemColor: Colors.blueAccent,
       onTap: (index) {
         if (index == 1) {
           context.go('/profile');
-        } else if (index == 2) {
-          context.go('/discussion');
         } else {
           context.go('/home');
         }

@@ -42,5 +42,6 @@
   "explanation": "Explanation",
   "correct": "Correct",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "retest": "Retest"
 }

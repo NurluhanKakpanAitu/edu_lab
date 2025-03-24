@@ -37,4 +37,21 @@ class UserService {
       return ApiResponse.fromError('Failed to update profile');
     }
   }
+
+  Future<ApiResponse> getTestResult(String testId) async {
+    try {
+      final response = await apiClient.dio.get(
+        '/User/$testId/test-result',
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to get test result');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to get test result');
+    }
+  }
 }

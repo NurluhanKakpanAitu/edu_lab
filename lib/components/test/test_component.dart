@@ -10,7 +10,9 @@ class TestComponent extends StatelessWidget {
   final Function(String questionId, String answerId, bool isCorrect)
   onAnswerSelected;
   final VoidCallback onSubmit;
+  final VoidCallback onRetest; // New callback for re-testing
   final bool blockSubmit;
+  final bool blockRetest;
 
   const TestComponent({
     super.key,
@@ -19,7 +21,9 @@ class TestComponent extends StatelessWidget {
     required this.selectedAnswers,
     required this.onAnswerSelected,
     required this.onSubmit,
+    required this.onRetest, // Add the new callback here
     required this.blockSubmit,
+    required this.blockRetest,
   });
 
   @override
@@ -86,7 +90,31 @@ class TestComponent extends StatelessWidget {
           ),
           child: Text(
             localizations.translate('submit'),
-            style: TextStyle(
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed:
+              blockRetest
+                  ? null
+                  : onRetest, // Disable the button if blockRetest is true
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+          child: Text(
+            localizations.translate(
+              'retest',
+            ), // Add a translation key for "Retest"
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,

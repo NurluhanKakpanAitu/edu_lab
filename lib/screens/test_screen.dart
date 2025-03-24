@@ -10,6 +10,7 @@ import 'package:edu_lab/entities/test/test_result.dart';
 import 'package:edu_lab/entities/test/user_test_result.dart';
 import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/test_service.dart';
+import 'package:edu_lab/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:edu_lab/app_localizations.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
@@ -29,14 +30,16 @@ class TestScreenState extends State<TestScreen> {
   bool _isLoading = true;
   Test? _test;
   PracticeWork? _practiceWork;
-  final List<TestResult> _selectedAnswers = [];
+  List<TestResult> _selectedAnswers = [];
   final CodeController _codeController = CodeController();
   final testService = TestService();
+  final userService = UserService();
   late Locale locale;
   PracticeWorkResult? practiceWorkResult;
   bool isLoadedPracticeWork = false;
   UserTestResult? userTestResult;
   bool blockSubmit = false;
+  bool blockRetest = true;
 
   @override
   void initState() {
@@ -59,6 +62,31 @@ class TestScreenState extends State<TestScreen> {
       var practiceResponse = await testService.getPracticeWork(widget.moduleId);
       if (practiceResponse.success) {
         _practiceWork = PracticeWork.fromJson(practiceResponse.data);
+      }
+
+      var userTestResultResponse = await userService.getTestResult(
+        _test?.id ?? '',
+      );
+
+      if (userTestResultResponse.success) {
+        if (userTestResultResponse.data != null) {
+          var selectedAnswers =
+              userTestResultResponse.data['testResults'] as List;
+          if (selectedAnswers.isNotEmpty) {
+            _selectedAnswers =
+                selectedAnswers.map((e) => TestResult.fromJson(e)).toList();
+
+            var maxScore = userTestResultResponse.data['maxScore'];
+            var score = userTestResultResponse.data['score'];
+
+            userTestResult = UserTestResult(maxScore: maxScore, score: score);
+            blockSubmit = true;
+            blockRetest = false;
+          }
+        }
+      } else {
+        blockSubmit = false;
+        blockRetest = true;
       }
 
       if (!mounted) return;
@@ -97,6 +125,7 @@ class TestScreenState extends State<TestScreen> {
     setState(() {
       userTestResult = UserTestResult.fromJson(apiResponse.data);
       blockSubmit = true;
+      blockRetest = false;
     });
 
     ScaffoldMessenger.of(
@@ -194,6 +223,15 @@ class TestScreenState extends State<TestScreen> {
                         },
                         onSubmit: _submitTest,
                         blockSubmit: blockSubmit,
+                        onRetest: () {
+                          setState(() {
+                            _selectedAnswers = [];
+                            userTestResult = null;
+                            blockSubmit = false;
+                            blockRetest = true;
+                          });
+                        },
+                        blockRetest: blockRetest,
                       ),
                     if (userTestResult != null)
                       UserTestResultComponent(userTestResult: userTestResult!),
