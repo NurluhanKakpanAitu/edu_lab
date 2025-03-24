@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:edu_lab/entities/token.dart';
+import 'package:edu_lab/main.dart';
+import 'package:edu_lab/router.dart';
 import 'package:edu_lab/utils/token_storage.dart';
 
 class ApiClient {
@@ -21,6 +23,8 @@ class ApiClient {
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+          options.headers['Lang'] =
+              MyApp.getLocale(navigatorKey.currentContext!)?.languageCode;
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
@@ -35,6 +39,8 @@ class ApiClient {
               return handler.resolve(await _dio.fetch(e.requestOptions));
             }
           }
+          e.requestOptions.headers['Lang'] =
+              MyApp.getLocale(navigatorKey.currentContext!)?.languageCode;
           return handler.next(e);
         },
       ),

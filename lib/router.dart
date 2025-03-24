@@ -2,10 +2,14 @@ import 'package:edu_lab/screens/auth_screen.dart';
 import 'package:edu_lab/screens/course_screen.dart';
 import 'package:edu_lab/screens/home_screen.dart';
 import 'package:edu_lab/screens/test_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/profile_screen.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter router = GoRouter(
+  navigatorKey: navigatorKey,
   initialLocation: '/', // Указываем стартовую страницу
 
   routes: [

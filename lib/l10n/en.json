@@ -36,5 +36,11 @@
   "codeSubmitted" : "Code submitted",
   "submitCode": "Submit Code",
   "testResult": "Test Result",
-  "score": "Score"
+  "score": "Score",
+  "result": "Result",
+  "answer": "Answer",
+  "explanation": "Explanation",
+  "correct": "Correct",
+  "yes": "Yes",
+  "no": "No"
 }

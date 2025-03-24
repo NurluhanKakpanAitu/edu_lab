@@ -121,6 +121,8 @@ class TestScreenState extends State<TestScreen> {
       code,
     );
 
+    if (!mounted) return;
+
     setState(() {
       isLoadedPracticeWork = false;
     });

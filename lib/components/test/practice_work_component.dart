@@ -119,18 +119,4 @@ class _PracticeWorkComponentState extends State<PracticeWorkComponent> {
         )
         : LoadingIndicator();
   }
-
-  @override
-  void didUpdateWidget(covariant PracticeWorkComponent oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Update the CodeController with the new text in the codeController
-    codeEditorController.text = widget.codeController.text;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Update the CodeController with the new language
-    codeEditorController.language = python;
-  }
 }

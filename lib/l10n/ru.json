@@ -36,5 +36,11 @@
   "codeSubmitted" : "Код отправлен",
   "submitCode": "Отправить код",
   "testResult": "Результат теста",
-  "score": "Балл"
+  "score": "Балл",
+  "result": "Результат",
+  "answer": "Ответ",
+  "explanation": "Объяснение",
+  "correct": "Верно",
+  "yes": "Да",
+  "no": "Нет"
 }
