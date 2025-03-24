@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:edu_lab/services/course_service.dart';
 import 'package:edu_lab/services/file_service.dart';
 import 'package:edu_lab/utils/response.dart';
 import 'package:file_picker/file_picker.dart';
@@ -34,7 +33,6 @@ class _AddModuleModalState extends State<AddModuleModal> {
   };
   final _orderController = TextEditingController();
   final _fileService = FileService();
-  final _moduleService = CourseService();
   bool _isSubmitting = false;
   File? _selectedFile;
   String? _uploadedVideoPath;
@@ -91,22 +89,6 @@ class _AddModuleModalState extends State<AddModuleModal> {
       );
       return;
     }
-
-    final moduleData = {
-      "title": {
-        "en": _titleControllers['en']!.text,
-        "ru": _titleControllers['ru']!.text,
-        "kz": _titleControllers['kz']!.text,
-      },
-      "description": {
-        "en": _descriptionControllers['en']!.text,
-        "ru": _descriptionControllers['ru']!.text,
-        "kz": _descriptionControllers['kz']!.text,
-      },
-      "videoPath": _uploadedVideoPath,
-      "order": int.parse(_orderController.text),
-      "courseId": widget.courseId,
-    };
 
     setState(() {
       _isSubmitting = true;

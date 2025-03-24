@@ -7,7 +7,6 @@ import 'package:edu_lab/services/file_service.dart';
 import 'package:flutter/material.dart';
 import 'package:edu_lab/entities/course/course.dart';
 import 'package:edu_lab/services/course_service.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddCourseModal extends StatefulWidget {

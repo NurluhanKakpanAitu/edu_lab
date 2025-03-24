@@ -40,7 +40,6 @@ class HomeScreenState extends State<HomeScreen> {
 
   void getUserRole() async {
     var response = await authService.getUserRole();
-    print(response);
     setState(() {
       userRole = response;
     });
