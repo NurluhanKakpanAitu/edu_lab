@@ -1,4 +1,5 @@
 import 'package:edu_lab/components/course/course_header.dart';
+import 'package:edu_lab/components/course/module/add_module.dart';
 import 'package:edu_lab/components/course/module/module_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
@@ -120,6 +121,22 @@ class CourseScreenState extends State<CourseScreen> {
     }
   }
 
+  void _showAddModuleModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return AddModuleModal(
+          courseId: widget.courseId,
+          onModuleAdded: _loadCourse, // Reload the course after adding a module
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -161,6 +178,21 @@ class CourseScreenState extends State<CourseScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _showAddModuleModal(context);
+                      },
+                      child: Text(localizations.translate('addModule')),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      localizations.translate('modules'),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     const SizedBox(height: 16),
                     ModuleList(
                       modules: course.modules,
@@ -175,30 +207,6 @@ class CourseScreenState extends State<CourseScreen> {
                         context.go('/module/${widget.courseId}/test/$moduleId');
                       },
                       locale: _selectedLocale,
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showReviewDialog(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      child: Text(
-                        localizations.translate('writeReview'),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
                     ),
                   ],
                 ),

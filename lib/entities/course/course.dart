@@ -1,3 +1,4 @@
+import 'package:edu_lab/entities/course/add_course.dart';
 import 'package:edu_lab/entities/translation.dart';
 
 class Course {
@@ -13,5 +14,14 @@ class Course {
     title = Translation.fromJson(json['title']);
     description = Translation.fromJson(json['description']);
     imagePath = json['imagePath'];
+  }
+
+  static Course fromModal(AddCourse addCourse, String id) {
+    return Course(
+      id: id,
+      title: addCourse.title,
+      description: addCourse.description,
+      imagePath: addCourse.imagePath,
+    );
   }
 }

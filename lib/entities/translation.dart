@@ -23,4 +23,12 @@ class Translation {
         return en;
     }
   }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['kz'] = kz;
+    data['ru'] = ru;
+    data['en'] = en;
+    return data;
+  }
 }

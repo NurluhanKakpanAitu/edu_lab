@@ -1,4 +1,5 @@
 import 'package:edu_lab/app_localizations.dart';
+import 'package:edu_lab/components/course/add_course_modal.dart';
 import 'package:edu_lab/components/course/course_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/bottom_navbar.dart';
@@ -26,6 +27,7 @@ class HomeScreenState extends State<HomeScreen> {
   late List<Course> courses = [];
   late User user;
   bool _isLoading = true; // Track loading state
+  int userRole = 2;
 
   @override
   void initState() {
@@ -33,6 +35,15 @@ class HomeScreenState extends State<HomeScreen> {
     _loadUserData();
     _loadCourses();
     _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
+    getUserRole();
+  }
+
+  void getUserRole() async {
+    var response = await authService.getUserRole();
+    print(response);
+    setState(() {
+      userRole = response;
+    });
   }
 
   void _loadCourses() async {
@@ -81,6 +92,25 @@ class HomeScreenState extends State<HomeScreen> {
     MyApp.setLocale(context, locale);
   }
 
+  void _showAddCourseModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return AddCourseModal(
+          onCourseAdded: (course) {
+            setState(() {
+              courses.add(course); // Add the new course to the list
+            });
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -117,6 +147,16 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
               ),
       bottomNavigationBar: BottomNavbar(locale: _selectedLocale.languageCode),
+      floatingActionButton:
+          userRole == 1
+              ? FloatingActionButton(
+                onPressed: () {
+                  _showAddCourseModal(context);
+                },
+                backgroundColor: Colors.blue,
+                child: const Icon(Icons.add),
+              )
+              : null, //
     );
   }
 

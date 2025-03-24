@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:edu_lab/entities/course/add_course.dart';
 import 'package:edu_lab/utils/api_client.dart';
 import 'package:edu_lab/utils/response.dart';
 
@@ -29,6 +31,24 @@ class CourseService {
       }
     } catch (e) {
       return ApiResponse.fromError('Failed to fetch course');
+    }
+  }
+
+  Future<ApiResponse> addCourse(AddCourse addCourseModal) async {
+    try {
+      var response = await apiClient.dio.post(
+        '/Course',
+        data: addCourseModal.toJson(),
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to add course');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to add course');
     }
   }
 }

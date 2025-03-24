@@ -82,4 +82,21 @@ class AuthService {
       return ApiResponse.fromError('Failed to get user info');
     }
   }
+
+  Future<int> getUserRole() async {
+    try {
+      final response = await apiClient.dio.get(
+        '/Auth/get-info',
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+      if (response.statusCode == 200) {
+        var apiResponse = ApiResponse.fromJson(response.data);
+        return apiResponse.data['role'];
+      } else {
+        return 2;
+      }
+    } catch (e) {
+      return 2;
+    }
+  }
 }
