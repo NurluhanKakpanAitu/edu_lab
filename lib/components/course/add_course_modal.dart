@@ -33,7 +33,6 @@ class _AddCourseModalState extends State<AddCourseModal> {
   final _courseService = CourseService();
   final _fileService = FileService();
   bool _isSubmitting = false;
-  File? _selectedFile;
   String? _uploadedFilePath;
   final _picker = ImagePicker();
 
@@ -70,14 +69,21 @@ class _AddCourseModalState extends State<AddCourseModal> {
   void _submitCourse() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedFile != null && _uploadedFilePath == null) {
-      await _uploadImageToMinIO(_selectedFile! as XFile);
+    if (_titleControllers.values.every(
+      (controller) => controller.text.isEmpty,
+    )) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('At least one title must be filled.')),
+      );
+      return;
     }
 
-    if (_uploadedFilePath == null && _selectedFile != null) {
+    if (_descriptionControllers.values.every(
+      (controller) => controller.text.isEmpty,
+    )) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please upload the selected file before submitting.'),
+          content: Text('At least one description must be filled.'),
         ),
       );
       return;
@@ -103,6 +109,8 @@ class _AddCourseModalState extends State<AddCourseModal> {
 
     final response = await _courseService.addCourse(addCourse);
 
+    if (!mounted) return;
+
     setState(() {
       _isSubmitting = false;
     });
@@ -121,6 +129,7 @@ class _AddCourseModalState extends State<AddCourseModal> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -135,13 +144,13 @@ class _AddCourseModalState extends State<AddCourseModal> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Add Course',
+              Text(
+                localizations.translate('addCourse'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Title',
+              Text(
+                localizations.translate('title'),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -153,21 +162,15 @@ class _AddCourseModalState extends State<AddCourseModal> {
                   child: TextFormField(
                     controller: controller,
                     decoration: InputDecoration(
-                      labelText: 'Title ($language)',
+                      labelText: localizations.translate('title_$language'),
                       border: const OutlineInputBorder(),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Title ($language) is required';
-                      }
-                      return null;
-                    },
                   ),
                 );
               }),
               const SizedBox(height: 16),
-              const Text(
-                'Description',
+              Text(
+                localizations.translate('description'),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -179,15 +182,11 @@ class _AddCourseModalState extends State<AddCourseModal> {
                   child: TextFormField(
                     controller: controller,
                     decoration: InputDecoration(
-                      labelText: 'Description ($language)',
+                      labelText: localizations.translate(
+                        'description_$language',
+                      ),
                       border: const OutlineInputBorder(),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Description ($language) is required';
-                      }
-                      return null;
-                    },
                   ),
                 );
               }),
@@ -197,18 +196,17 @@ class _AddCourseModalState extends State<AddCourseModal> {
                 children: [
                   ElevatedButton(
                     onPressed: _pickImage,
-                    child: const Text('Pick Image'),
+                    child: Text(localizations.translate('uploadImage')),
                   ),
                   const SizedBox(height: 16),
-                  if (_uploadedFilePath != null || _selectedFile != null)
+                  if (_uploadedFilePath != null)
                     Container(
                       width:
                           double
                               .infinity, // Ensure the text does not expand indefinitely
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Text(
-                        _uploadedFilePath ??
-                            _selectedFile!.path.split('/').last,
+                        _uploadedFilePath!,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontSize: 14),
                       ),
@@ -221,7 +219,7 @@ class _AddCourseModalState extends State<AddCourseModal> {
                 child:
                     _isSubmitting
                         ? const CircularProgressIndicator()
-                        : const Text('Submit'),
+                        : Text(localizations.translate('submit')),
               ),
             ],
           ),

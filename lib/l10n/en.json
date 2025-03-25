@@ -1,5 +1,5 @@
 {
-  "title": "Login/Register",
+  "auth": "Login/Register",
   "email": "Email",
   "password": "Password",
   "login": "Login with Email",
@@ -43,5 +43,15 @@
   "correct": "Correct",
   "yes": "Yes",
   "no": "No",
-  "retest": "Retest"
+  "retest": "Retest",
+  "title" : "Title",
+  "description" : "Description",
+  "addCourse": "Add Course",
+  "description_en": "Description (English)",
+  "description_kz": "Description (Kazakh)",
+  "description_ru": "Description (Russian)",
+  "title_en": "Title (English)",
+  "title_kz": "Title (Kazakh)",
+  "title_ru": "Title (Russian)",
+  "uploadImage": "Upload Image"
 }

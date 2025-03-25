@@ -86,7 +86,7 @@ class AuthScreenState extends State<AuthScreen> {
     final localizations = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.translate('title')),
+        title: Text(localizations.translate('auth')),
         backgroundColor: Colors.blueAccent,
         actions: [
           LanguageDropdown(

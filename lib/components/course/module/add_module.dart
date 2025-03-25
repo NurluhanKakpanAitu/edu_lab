@@ -56,6 +56,8 @@ class _AddModuleModalState extends State<AddModuleModal> {
 
     final response = await _fileService.uploadFile(_selectedFile!);
 
+    if (!mounted) return;
+
     setState(() {
       _isSubmitting = false;
     });
@@ -95,6 +97,8 @@ class _AddModuleModalState extends State<AddModuleModal> {
     });
 
     final response = ApiResponse(true, null, null);
+
+    if (!mounted) return;
 
     setState(() {
       _isSubmitting = false;
