@@ -57,5 +57,15 @@
   "addModule": "Add Module",
   "uploadVideo": "Upload Video",
   "videoUrl": "Video URL",
-  "videoUrlHint": "Enter the URL of the video here..."
+  "videoUrlHint": "Enter the URL of the video here...",
+  "addTest": "Add Test",
+  "addQuestion": "Add Question",
+  "addAnswer": "Add Answer",
+  "question": "Question",
+  "question_en": "Question (English)",
+  "question_kz": "Question (Kazakh)",
+  "question_ru": "Question (Russian)",
+  "answer_en": "Answer (English)",
+  "answer_kz": "Answer (Kazakh)",
+  "answer_ru": "Answer (Russian)"
 }

@@ -1,4 +1,5 @@
 import 'package:edu_lab/components/shared/app_bar.dart';
+import 'package:edu_lab/components/test/add_test_modal_component.dart';
 import 'package:edu_lab/components/test/practice_work_component.dart';
 import 'package:edu_lab/components/test/practice_work_result.dart';
 import 'package:edu_lab/components/test/test_component.dart';
@@ -172,9 +173,30 @@ class TestScreenState extends State<TestScreen> {
     );
   }
 
+  void _showAddTestModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows custom height
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.7, // Modal height is 50% of the screen
+          child: AddTestModal(
+            moduleId: widget.moduleId,
+            onTestAdded: () {
+              _loadData();
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -198,6 +220,31 @@ class TestScreenState extends State<TestScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _showAddTestModal(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      icon: const Icon(Icons.add, size: 20),
+                      label: Text(
+                        localizations.translate('addTest'),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     if (_test != null)
                       TestComponent(
                         test: _test!,

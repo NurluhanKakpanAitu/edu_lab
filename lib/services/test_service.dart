@@ -73,4 +73,17 @@ class TestService {
       return ApiResponse.fromError('Failed to submit test');
     }
   }
+
+  Future<ApiResponse> addTest(Map<String, dynamic> data) async {
+    try {
+      final response = await _apiClient.dio.post('/Test', data: data);
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to add test');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to add test');
+    }
+  }
 }
