@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:edu_lab/app_localizations.dart';
+import 'package:edu_lab/entities/course/add_module.dart';
+import 'package:edu_lab/entities/translation.dart';
+import 'package:edu_lab/services/course_service.dart';
 import 'package:edu_lab/services/file_service.dart';
-import 'package:edu_lab/utils/response.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -31,93 +34,94 @@ class _AddModuleModalState extends State<AddModuleModal> {
     'ru': TextEditingController(),
     'kz': TextEditingController(),
   };
-  final _orderController = TextEditingController();
+  final _videoUrlController = TextEditingController();
   final _fileService = FileService();
   bool _isSubmitting = false;
-  File? _selectedFile;
   String? _uploadedVideoPath;
+  final _courseService = CourseService();
 
   void _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.video);
-
+    final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result != null && result.files.single.path != null) {
+      var videoPath = await _uploadFile(File(result.files.single.path!));
       setState(() {
-        _selectedFile = File(result.files.single.path!);
+        _videoUrlController.clear();
+        _uploadedVideoPath = videoPath;
       });
     }
   }
 
-  Future<void> _uploadFile() async {
-    if (_selectedFile == null) return;
-
+  Future<String> _uploadFile(File file) async {
     setState(() {
       _isSubmitting = true;
     });
 
-    final response = await _fileService.uploadFile(_selectedFile!);
-
-    if (!mounted) return;
+    final response = await _fileService.uploadFile(file);
 
     setState(() {
       _isSubmitting = false;
     });
 
     if (response.success) {
-      setState(() {
-        _uploadedVideoPath =
-            response.data; // Assuming the backend returns the file path
-      });
+      return response.data!;
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to upload video: ${response.errorMessage}'),
-        ),
-      );
+      return '';
     }
   }
 
   void _submitModule() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedFile != null && _uploadedVideoPath == null) {
-      await _uploadFile();
-    }
+    final title = {
+      for (var entry in _titleControllers.entries) entry.key: entry.value.text,
+    };
 
-    if (_uploadedVideoPath == null && _selectedFile != null) {
+    final description = {
+      for (var entry in _descriptionControllers.entries)
+        entry.key: entry.value.text,
+    };
+
+    final videoPath = _uploadedVideoPath ?? _videoUrlController.text;
+
+    final module = AddModule(
+      title: Translation.fromJson(title),
+      description: Translation.fromJson(description),
+      videoPath: videoPath,
+      courseId: widget.courseId,
+    );
+
+    var response = await _courseService.addModule(module);
+
+    if (!mounted) return;
+
+    if (response.success) {
+      widget.onModuleAdded();
+      Navigator.of(context).pop();
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please upload the selected video before submitting.'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).translate('moduleAddFailed'),
+          ),
         ),
       );
-      return;
     }
 
     setState(() {
       _isSubmitting = true;
     });
 
-    final response = ApiResponse(true, null, null);
-
     if (!mounted) return;
 
     setState(() {
       _isSubmitting = false;
     });
-
-    if (response.success) {
-      widget.onModuleAdded();
-      Navigator.pop(context); // Close the modal
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to add module: ${response.errorMessage}'),
-        ),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -132,8 +136,8 @@ class _AddModuleModalState extends State<AddModuleModal> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Add Module',
+              Text(
+                localizations.translate('addModule'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
@@ -145,15 +149,9 @@ class _AddModuleModalState extends State<AddModuleModal> {
                   child: TextFormField(
                     controller: controller,
                     decoration: InputDecoration(
-                      labelText: 'Title ($language)',
+                      labelText: localizations.translate('title_$language'),
                       border: const OutlineInputBorder(),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Title ($language) is required';
-                      }
-                      return null;
-                    },
                   ),
                 );
               }),
@@ -166,49 +164,43 @@ class _AddModuleModalState extends State<AddModuleModal> {
                   child: TextFormField(
                     controller: controller,
                     decoration: InputDecoration(
-                      labelText: 'Description ($language)',
+                      labelText: localizations.translate(
+                        'description_$language',
+                      ),
                       border: const OutlineInputBorder(),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Description ($language) is required';
-                      }
-                      return null;
-                    },
                   ),
                 );
               }),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _orderController,
-                decoration: const InputDecoration(
-                  labelText: 'Order',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Order is required';
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   ElevatedButton(
                     onPressed: _pickFile,
-                    child: const Text('Pick Video'),
+                    child: Text(localizations.translate('uploadVideo')),
                   ),
                   const SizedBox(width: 16),
-                  if (_selectedFile != null)
+                  if (_uploadedVideoPath != null)
                     Expanded(
                       child: Text(
-                        _selectedFile!.path.split('/').last,
+                        _uploadedVideoPath!,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                localizations.translate('videoUrl'),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _videoUrlController,
+                decoration: InputDecoration(
+                  labelText: localizations.translate('videoUrlHint'),
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -216,7 +208,7 @@ class _AddModuleModalState extends State<AddModuleModal> {
                 child:
                     _isSubmitting
                         ? const CircularProgressIndicator()
-                        : const Text('Submit'),
+                        : Text(localizations.translate('submit')),
               ),
             ],
           ),
@@ -233,7 +225,7 @@ class _AddModuleModalState extends State<AddModuleModal> {
     for (var controller in _descriptionControllers.values) {
       controller.dispose();
     }
-    _orderController.dispose();
+    _videoUrlController.dispose();
     super.dispose();
   }
 }

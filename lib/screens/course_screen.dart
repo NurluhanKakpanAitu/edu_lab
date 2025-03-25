@@ -1,5 +1,5 @@
 import 'package:edu_lab/components/course/course_header.dart';
-import 'package:edu_lab/components/course/module/add_module.dart';
+import 'package:edu_lab/components/course/module/add_module_modal_component.dart';
 import 'package:edu_lab/components/course/module/module_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
@@ -53,7 +53,6 @@ class CourseScreenState extends State<CourseScreen> {
       setState(() {
         course = CourseById.fromJson(response.data);
         _isLoading = false;
-        // Initialize expanded state for all modules
         _expandedModules = {
           for (var module in course.modules) module.id: false,
         };
@@ -120,21 +119,40 @@ class CourseScreenState extends State<CourseScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showAddModuleModal(context);
-                      },
-                      child: Text(localizations.translate('addModule')),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      localizations.translate('modules'),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 10),
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          _showAddModuleModal(context);
+                        },
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.add, color: Colors.blue),
+                              const SizedBox(width: 8),
+                              Text(
+                                localizations.translate('addModule'),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 16),
                     const SizedBox(height: 16),
                     ModuleList(
                       modules: course.modules,

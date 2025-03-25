@@ -53,5 +53,9 @@
   "title_en": "Title (English)",
   "title_kz": "Title (Kazakh)",
   "title_ru": "Title (Russian)",
-  "uploadImage": "Upload Image"
+  "uploadImage": "Upload Image",
+  "addModule": "Add Module",
+  "uploadVideo": "Upload Video",
+  "videoUrl": "Video URL",
+  "videoUrlHint": "Enter the URL of the video here..."
 }

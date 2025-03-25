@@ -6,6 +6,8 @@ class Module {
   final Translation? description;
   final String? videoPath;
   final int order;
+  final DateTime createdAt;
+  final String courseId;
 
   Module({
     required this.id,
@@ -13,6 +15,8 @@ class Module {
     required this.description,
     this.videoPath,
     required this.order,
+    required this.createdAt,
+    required this.courseId,
   });
 
   factory Module.fromJson(Map<String, dynamic> json) {
@@ -22,6 +26,8 @@ class Module {
       description: Translation.fromJson(json['description']),
       videoPath: json['videoPath'],
       order: json['order'],
+      createdAt: DateTime.parse(json['createdAt']),
+      courseId: json['courseId'],
     );
   }
 }
