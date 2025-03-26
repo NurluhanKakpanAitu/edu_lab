@@ -19,7 +19,7 @@ class AuthService {
       if (response.statusCode == 200) {
         var apiResponse = ApiResponse.fromJson(response.data);
         var token = Token.fromJson(apiResponse.data);
-        TokenStorage.saveTokens(token);
+        Storage.saveTokens(token);
         return apiResponse;
       } else {
         return ApiResponse.fromError('loginFailed');
@@ -40,7 +40,7 @@ class AuthService {
       if (response.statusCode == 200) {
         var apiResponse = ApiResponse.fromJson(response.data);
         var token = Token.fromJson(apiResponse.data);
-        TokenStorage.saveTokens(token);
+        Storage.saveTokens(token);
         return apiResponse;
       } else {
         return ApiResponse.fromError('Failed to register');
@@ -57,7 +57,7 @@ class AuthService {
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
       if (response.statusCode == 200) {
-        TokenStorage.clearTokens();
+        Storage.clearTokens();
         return ApiResponse.fromJson(response.data);
       } else {
         return ApiResponse.fromError('Failed to logout');
@@ -91,6 +91,7 @@ class AuthService {
       );
       if (response.statusCode == 200) {
         var apiResponse = ApiResponse.fromJson(response.data);
+        Storage.saveRole(apiResponse.data['role']);
         return apiResponse.data['role'];
       } else {
         return 2;

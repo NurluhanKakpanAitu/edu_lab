@@ -10,6 +10,7 @@ import 'package:edu_lab/entities/test/test.dart';
 import 'package:edu_lab/entities/test/test_result.dart';
 import 'package:edu_lab/entities/test/user_test_result.dart';
 import 'package:edu_lab/main.dart';
+import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/test_service.dart';
 import 'package:edu_lab/services/user_service.dart';
 import 'package:flutter/material.dart';
@@ -41,12 +42,14 @@ class TestScreenState extends State<TestScreen> {
   UserTestResult? userTestResult;
   bool blockSubmit = false;
   bool blockRetest = true;
+  int userRole = 2;
 
   @override
   void initState() {
     super.initState();
     locale = MyApp.getLocale(context) ?? const Locale('kk', '');
     _loadData();
+    loadUserRole();
   }
 
   void _loadData() async {
@@ -194,6 +197,13 @@ class TestScreenState extends State<TestScreen> {
     );
   }
 
+  void loadUserRole() async {
+    var response = await AuthService().getUserRole();
+    setState(() {
+      userRole = response;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -220,32 +230,52 @@ class TestScreenState extends State<TestScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        _showAddTestModal(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                    if (_test == null) ...[
+                      // Show "No test added" message if no test exists
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              localizations.translate('noTestAdded'),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            if (userRole ==
+                                1) // Show "Add Test" button for admins only
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _showAddTestModal(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.add, size: 20),
+                                label: Text(
+                                  localizations.translate('addTest'),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      icon: const Icon(Icons.add, size: 20),
-                      label: Text(
-                        localizations.translate('addTest'),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (_test != null)
+                    ] else ...[
+                      // Show the test component if a test exists
                       TestComponent(
                         test: _test!,
                         locale: locale,
@@ -280,6 +310,7 @@ class TestScreenState extends State<TestScreen> {
                         },
                         blockRetest: blockRetest,
                       ),
+                    ],
                     if (userTestResult != null)
                       UserTestResultComponent(userTestResult: userTestResult!),
 

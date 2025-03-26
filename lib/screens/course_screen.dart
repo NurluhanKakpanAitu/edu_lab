@@ -5,6 +5,7 @@ import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
 import 'package:edu_lab/entities/course/course_by_id.dart';
 import 'package:edu_lab/main.dart';
+import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:flutter/material.dart';
 import 'package:edu_lab/app_localizations.dart';
@@ -26,11 +27,14 @@ class CourseScreenState extends State<CourseScreen> {
   Map<String, bool> _expandedModules =
       {}; // Track expanded state for each module
 
+  int userRole = 2;
+
   @override
   void initState() {
     super.initState();
     _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
     _loadCourse();
+    loadRole();
   }
 
   void _changeLanguage(Locale locale) {
@@ -78,6 +82,13 @@ class CourseScreenState extends State<CourseScreen> {
     );
   }
 
+  void loadRole() async {
+    var response = await AuthService().getUserRole();
+    setState(() {
+      userRole = response;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -120,39 +131,40 @@ class CourseScreenState extends State<CourseScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          _showAddModuleModal(context);
-                        },
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.add, color: Colors.blue),
-                              const SizedBox(width: 8),
-                              Text(
-                                localizations.translate('addModule'),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
+                    if (userRole == 1)
+                      Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            _showAddModuleModal(context);
+                          },
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.add, color: Colors.blue),
+                                const SizedBox(width: 8),
+                                Text(
+                                  localizations.translate('addModule'),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     const SizedBox(height: 16),
                     ModuleList(
                       modules: course.modules,

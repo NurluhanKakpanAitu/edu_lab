@@ -67,5 +67,6 @@
   "question_ru": "Question (Russian)",
   "answer_en": "Answer (English)",
   "answer_kz": "Answer (Kazakh)",
-  "answer_ru": "Answer (Russian)"
+  "answer_ru": "Answer (Russian)",
+  "noTestAdded": "No test added"
 }

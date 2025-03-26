@@ -19,7 +19,7 @@ class ApiClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token = await TokenStorage.getAccessToken();
+          final token = await Storage.getAccessToken();
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
@@ -32,7 +32,7 @@ class ApiClient {
             // Attempt to refresh token
             final success = await _refreshToken();
             if (success) {
-              final newToken = await TokenStorage.getAccessToken();
+              final newToken = await Storage.getAccessToken();
               e.requestOptions.headers['Authorization'] = 'Bearer $newToken';
 
               // Retry the request with the new token
@@ -50,7 +50,7 @@ class ApiClient {
   Dio get dio => _dio;
 
   Future<bool> _refreshToken() async {
-    final refreshToken = await TokenStorage.getRefreshToken();
+    final refreshToken = await Storage.getRefreshToken();
     if (refreshToken == null) return false;
 
     try {
@@ -60,11 +60,11 @@ class ApiClient {
         var decodedData = jsonDecode(response.data);
         var token = Token.fromJson(decodedData);
 
-        await TokenStorage.saveTokens(token);
+        await Storage.saveTokens(token);
         return true;
       }
     } catch (e) {
-      await TokenStorage.clearTokens();
+      await Storage.clearTokens();
     }
     return false;
   }
