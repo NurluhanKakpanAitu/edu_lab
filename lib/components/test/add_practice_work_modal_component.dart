@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:edu_lab/app_localizations.dart';
 import 'package:edu_lab/services/test_service.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -86,6 +87,8 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -100,8 +103,8 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Add Practice Work',
+              Text(
+                localizations.translate('addPracticeWork'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
@@ -113,15 +116,9 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
                   child: TextFormField(
                     controller: controller,
                     decoration: InputDecoration(
-                      labelText: 'Title ($language)',
+                      labelText: localizations.translate('title_$language'),
                       border: const OutlineInputBorder(),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Title ($language) is required';
-                      }
-                      return null;
-                    },
                   ),
                 );
               }),
@@ -134,22 +131,18 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
                   child: TextFormField(
                     controller: controller,
                     decoration: InputDecoration(
-                      labelText: 'Description ($language)',
+                      labelText: localizations.translate(
+                        'description_$language',
+                      ),
                       border: const OutlineInputBorder(),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Description ($language) is required';
-                      }
-                      return null;
-                    },
                   ),
                 );
               }),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _pickImage,
-                child: const Text('Pick Image'),
+                child: Text(localizations.translate('pickImage')),
               ),
               if (_selectedImage != null)
                 Padding(
@@ -165,7 +158,7 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
                 child:
                     _isSubmitting
                         ? const CircularProgressIndicator()
-                        : const Text('Submit'),
+                        : Text(localizations.translate('submit')),
               ),
             ],
           ),
