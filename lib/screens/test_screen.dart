@@ -1,9 +1,9 @@
 import 'package:edu_lab/components/shared/app_bar.dart';
+import 'package:edu_lab/components/test/add_practice_work_modal_component.dart';
 import 'package:edu_lab/components/test/add_test_modal_component.dart';
 import 'package:edu_lab/components/test/practice_work_component.dart';
 import 'package:edu_lab/components/test/practice_work_result.dart';
 import 'package:edu_lab/components/test/test_component.dart';
-import 'package:edu_lab/components/test/user_test_result_component.dart';
 import 'package:edu_lab/entities/test/practice_work.dart';
 import 'package:edu_lab/entities/test/practice_work_result.dart';
 import 'package:edu_lab/entities/test/test.dart';
@@ -204,6 +204,27 @@ class TestScreenState extends State<TestScreen> {
     });
   }
 
+  void _showAddPracticeWorkModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.7, // Modal height is 70% of the screen
+          child: AddPracticeWorkModal(
+            moduleId: widget.moduleId,
+            onPracticeWorkAdded: () {
+              _loadData(); // Reload data after adding practice work
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -311,11 +332,53 @@ class TestScreenState extends State<TestScreen> {
                         blockRetest: blockRetest,
                       ),
                     ],
-                    if (userTestResult != null)
-                      UserTestResultComponent(userTestResult: userTestResult!),
-
                     const SizedBox(height: 30),
-                    if (_practiceWork != null) ...[
+                    if (_practiceWork == null) ...[
+                      // Show "No practice work added" message if no practice work exists
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              localizations.translate('noPracticeWorkAdded'),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            if (userRole ==
+                                1) // Show "Add Practice Work" button for admins only
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _showAddPracticeWorkModal(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.add, size: 20),
+                                label: Text(
+                                  localizations.translate('addPracticeWork'),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ] else ...[
+                      // Show the practice work component if it exists
                       PracticeWorkComponent(
                         practiceWork: _practiceWork!,
                         locale: locale,

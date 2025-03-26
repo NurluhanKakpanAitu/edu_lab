@@ -86,4 +86,20 @@ class TestService {
       return ApiResponse.fromError('Failed to add test');
     }
   }
+
+  Future<ApiResponse> addPracticeWork(Map<String, dynamic> data) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/Test/practice-works',
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to add practice work');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to add practice work');
+    }
+  }
 }
