@@ -24,7 +24,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   void _initializeVideo() async {
     try {
       _controller = VideoPlayerController.networkUrl(
-          Uri.parse('http://localhost:9000/course/${widget.videoUrl}'),
+          Uri.parse('http://85.202.192.76:9000/course/${widget.videoUrl}'),
         )
         ..initialize()
             .then((_) {

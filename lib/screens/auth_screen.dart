@@ -163,24 +163,6 @@ class AuthScreenState extends State<AuthScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 32.0),
-            Divider(),
-            SizedBox(height: 16.0),
-            ElevatedButton.icon(
-              onPressed: () {},
-              icon: Image.asset('assets/google_logo.png', height: 24.0),
-              label: Text(
-                localizations.translate('withGoogle'),
-                style: TextStyle(color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 25, 0, 29),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 16.0),
-              ),
-            ),
           ],
         ),
       ),

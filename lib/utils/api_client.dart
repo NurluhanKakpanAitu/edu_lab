@@ -9,7 +9,7 @@ import 'package:edu_lab/utils/token_storage.dart';
 class ApiClient {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://localhost:5148/api',
+      baseUrl: 'http://85.202.192.76:8080/api',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
     ),
