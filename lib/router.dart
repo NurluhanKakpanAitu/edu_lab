@@ -8,7 +8,6 @@ import 'screens/profile_screen.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter router = GoRouter(
-  navigatorKey: navigatorKey,
   initialLocation: '/', // Указываем стартовую страницу
 
   routes: [

@@ -52,18 +52,12 @@ class _PracticeWorkComponentState extends State<PracticeWorkComponent> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.practiceWork.title.getTranslation(
-                    widget.locale.languageCode,
-                  ) ??
-                  'No Title',
+              widget.practiceWork.title,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Text(
-              widget.practiceWork.description.getTranslation(
-                    widget.locale.languageCode,
-                  ) ??
-                  'No Description',
+              widget.practiceWork.description ?? 'No Description',
               style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 20),

@@ -1,9 +1,7 @@
-import 'package:edu_lab/entities/translation.dart';
-
 class PracticeWork {
   late String id;
-  late Translation title;
-  late Translation description;
+  late String title;
+  late String? description;
   late String? imagePath;
 
   PracticeWork({
@@ -15,8 +13,8 @@ class PracticeWork {
 
   PracticeWork.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    title = Translation.fromJson(json['title']);
-    description = Translation.fromJson(json['description']);
+    title = json['title'];
+    description = json['description'];
     imagePath = json['imagePath'];
   }
 }

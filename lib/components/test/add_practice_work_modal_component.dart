@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:edu_lab/services/test_service.dart';
+import 'package:edu_lab/utils/api_response.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -42,14 +41,8 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
       _isSubmitting = true;
     });
 
-    final practiceWorkData = {
-      "title": {"kz": _titleController.text},
-      "description": {"kz": _descriptionController.text},
-      "imagePath": _selectedImage?.path,
-      "moduleId": widget.moduleId,
-    };
 
-    var response = await TestService().addPracticeWork(practiceWorkData);
+    var response = ApiResponse(true, null, null);
 
     setState(() {
       _isSubmitting = false;

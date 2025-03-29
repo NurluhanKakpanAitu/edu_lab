@@ -1,4 +1,6 @@
+import 'package:edu_lab/entities/token.dart';
 import 'package:edu_lab/services/auth_service.dart';
+import 'package:edu_lab/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,16 +42,12 @@ class AuthScreenState extends State<AuthScreen> {
     if (!mounted) return;
 
     if (response.success == true) {
+      Storage.saveTokens(Token.fromJson(response.data));
       context.go('/home');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content:
-              response.errorMessage != null
-                  ? Text("${response.errorMessage}")
-                  : Text('Failed to login'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Кіру сәтсіз аяқталды')));
     }
   }
 
@@ -62,11 +60,12 @@ class AuthScreenState extends State<AuthScreen> {
     if (!mounted) return;
 
     if (response.success == true) {
+      Storage.saveTokens(Token.fromJson(response.data));
       context.go('/home');
     } else {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(response.errorMessage ?? '')));
+      ).showSnackBar(SnackBar(content: Text('Тіркелу сәтсіз аяқталды')));
     }
   }
 
@@ -159,5 +158,12 @@ class AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

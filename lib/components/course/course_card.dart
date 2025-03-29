@@ -1,23 +1,24 @@
+import 'package:edu_lab/entities/models/course_model.dart';
 import 'package:flutter/material.dart';
-import 'package:edu_lab/entities/course/course.dart';
 
 class CourseCard extends StatelessWidget {
-  final Course course;
+  final CourseModel course;
   final VoidCallback onGoToCourse;
+  final VoidCallback? onDeleteCourse;
+  final VoidCallback? onEditCourse;
 
   const CourseCard({
     super.key,
     required this.course,
     required this.onGoToCourse,
+    this.onDeleteCourse,
+    this.onEditCourse,
   });
 
   @override
   Widget build(BuildContext context) {
-    var courseTitle = '';
-    // course.title?.getTranslation(locale.languageCode) ?? 'No Title';
-    var courseDescription = '';
-    // course.description?.getTranslation(locale.languageCode) ??
-    // 'No Description';
+    var courseTitle = course.title;
+    var courseDescription = course.description ?? '';
 
     if (courseDescription.length > 200) {
       courseDescription = '${courseDescription.substring(0, 200)}...';
@@ -25,7 +26,7 @@ class CourseCard extends StatelessWidget {
 
     return Card(
       elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -42,7 +43,7 @@ class CourseCard extends StatelessWidget {
                   return Container(
                     height: 150,
                     color: Colors.grey[300],
-                    child: Center(
+                    child: const Center(
                       child: Icon(
                         Icons.broken_image,
                         size: 50,
@@ -53,39 +54,61 @@ class CourseCard extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               courseTitle,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               courseDescription,
               style: TextStyle(fontSize: 14, color: Colors.grey[700]),
             ),
-            SizedBox(height: 15),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: onGoToCourse,
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment
+                      .spaceBetween, // Separate left and right groups
+              children: [
+                // Left side: Edit and Delete buttons
+                Row(
+                  children: [
+                    if (onEditCourse != null)
+                      IconButton(
+                        onPressed: onEditCourse,
+                        icon: const Icon(Icons.edit, color: Colors.orange),
+                        tooltip: 'Өңдеу',
+                      ),
+                    if (onDeleteCourse != null)
+                      IconButton(
+                        onPressed: onDeleteCourse,
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        tooltip: 'Жою',
+                      ),
+                  ],
+                ),
+                // Right side: Go to Course button
+                TextButton(
+                  onPressed: onGoToCourse,
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                  ),
+                  child: const Text(
+                    'Курсқа өту',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontFamily: 'Roboto',
+                    ),
                   ),
                 ),
-                child: Text(
-                  'Курсқа өту',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontFamily: 'Roboto',
-                  ),
-                ),
-              ),
+              ],
             ),
           ],
         ),

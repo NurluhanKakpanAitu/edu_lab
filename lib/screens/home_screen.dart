@@ -1,9 +1,10 @@
-import 'package:edu_lab/components/course/add_course_modal.dart';
+import 'package:edu_lab/components/course/course_modal.dart';
 import 'package:edu_lab/components/course/course_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/bottom_navbar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
-import 'package:edu_lab/entities/course/course.dart';
+import 'package:edu_lab/entities/models/course_model.dart';
+import 'package:edu_lab/entities/requests/course_request.dart';
 import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
@@ -20,24 +21,15 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
   var courseService = CourseService();
   var authService = AuthService();
-  late List<Course> courses = [];
-  late User user;
+  late List<CourseModel> courses = [];
+  User user = User(id: '', email: '', role: 2, nickname: '');
   bool _isLoading = true; // Track loading state
-  int userRole = 2;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _loadCourses();
-    getUserRole();
-  }
-
-  void getUserRole() async {
-    var response = await authService.getUserRole();
-    setState(() {
-      userRole = response;
-    });
   }
 
   void _loadCourses() async {
@@ -53,7 +45,7 @@ class HomeScreenState extends State<HomeScreen> {
       setState(() {
         courses =
             (response.data as List)
-                .map((course) => Course.fromJson(course))
+                .map((course) => CourseModel.fromJson(course))
                 .toList();
         _isLoading = false; // Stop loading
       });
@@ -79,7 +71,11 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _showAddCourseModal(BuildContext context) {
+  void _showCourseModal(
+    BuildContext context,
+    String? courseId,
+    CourseRequest? request,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -87,15 +83,43 @@ class HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) {
-        return AddCourseModal(
+        return CourseModal(
           onCourseAdded: (course) {
             setState(() {
               courses.add(course); // Add the new course to the list
             });
           },
+          onCourseUpdated: (course) {
+            setState(() {
+              int index = courses.indexWhere((c) => c.id == course.id);
+              if (index != -1) {
+                courses[index] = course;
+              }
+            });
+          },
+          courseId: courseId,
+          course: request,
         );
       },
     );
+  }
+
+  void _deleteCourse(String id) async {
+    var response = await courseService.deleteCourse(id);
+
+    if (!mounted) return;
+
+    if (response.success) {
+      setState(() {
+        courses.removeWhere((course) => course.id == id);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete course: ${response.errorMessage}'),
+        ),
+      );
+    }
   }
 
   @override
@@ -121,6 +145,25 @@ class HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: 10),
                       CourseList(
                         courses: courses,
+                        onDeleteCourse: (String id) {
+                          _deleteCourse(id);
+                        },
+                        onEditCourse: (
+                          String id,
+                          String title,
+                          String? description,
+                          String? imagePath,
+                        ) {
+                          _showCourseModal(
+                            context,
+                            id,
+                            CourseRequest(
+                              title: title,
+                              description: description,
+                              imagePath: imagePath,
+                            ),
+                          );
+                        },
                       ), // Use the CourseList component
                     ],
                   ),
@@ -128,10 +171,10 @@ class HomeScreenState extends State<HomeScreen> {
               ),
       bottomNavigationBar: BottomNavbar(),
       floatingActionButton:
-          userRole == 1
+          user.role == 1
               ? FloatingActionButton(
                 onPressed: () {
-                  _showAddCourseModal(context);
+                  _showCourseModal(context, null, null);
                 },
                 backgroundColor: Colors.blue,
                 child: const Icon(Icons.add),

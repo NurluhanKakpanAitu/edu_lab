@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:edu_lab/utils/api_client.dart';
-import 'package:edu_lab/utils/response.dart';
+import 'package:edu_lab/utils/api_response.dart';
 
 class UserService {
   var apiClient = ApiClient();

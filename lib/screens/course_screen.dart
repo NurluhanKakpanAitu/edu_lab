@@ -4,6 +4,7 @@ import 'package:edu_lab/components/course/module/module_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
 import 'package:edu_lab/entities/course/course_by_id.dart';
+import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:flutter/material.dart';
@@ -19,19 +20,18 @@ class CourseScreen extends StatefulWidget {
 
 class CourseScreenState extends State<CourseScreen> {
   late CourseById course;
-  late Locale _selectedLocale;
   var courseService = CourseService();
   var _isLoading = true;
   Map<String, bool> _expandedModules =
       {}; // Track expanded state for each module
 
-  int userRole = 2;
+  User user = User(id: '', nickname: '', email: '', role: 2);
 
   @override
   void initState() {
     super.initState();
     _loadCourse();
-    loadRole();
+    _loadUser();
   }
 
   void _loadCourse() async {
@@ -56,6 +56,20 @@ class CourseScreenState extends State<CourseScreen> {
     }
   }
 
+  void _loadUser() async {
+    var response = await AuthService().getUser();
+
+    if (!mounted) return;
+
+    if (response.success) {
+      setState(() {
+        user = User.fromJson(response.data);
+      });
+    } else {
+      context.go('/auth');
+    }
+  }
+
   void _showAddModuleModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -70,13 +84,6 @@ class CourseScreenState extends State<CourseScreen> {
         );
       },
     );
-  }
-
-  void loadRole() async {
-    var response = await AuthService().getUserRole();
-    setState(() {
-      userRole = response;
-    });
   }
 
   @override
@@ -98,16 +105,8 @@ class CourseScreenState extends State<CourseScreen> {
                   children: [
                     CourseHeader(
                       imagePath: course.imagePath,
-                      title:
-                          course.title.getTranslation(
-                            _selectedLocale.languageCode,
-                          ) ??
-                          'No Title',
-                      description:
-                          course.description.getTranslation(
-                            _selectedLocale.languageCode,
-                          ) ??
-                          'No Description',
+                      title: course.title,
+                      description: course.description ?? 'No Description',
                     ),
                     Text(
                       'Модульдар',
@@ -117,7 +116,7 @@ class CourseScreenState extends State<CourseScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    if (userRole == 1)
+                    if (user.role == 1)
                       Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -164,7 +163,6 @@ class CourseScreenState extends State<CourseScreen> {
                       onGoToTasks: (moduleId) {
                         context.go('/module/${widget.courseId}/test/$moduleId');
                       },
-                      locale: _selectedLocale,
                     ),
                   ],
                 ),

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:edu_lab/entities/token.dart';
-import 'package:edu_lab/utils/token_storage.dart';
+import 'package:edu_lab/utils/storage.dart';
 
 class ApiClient {
   final Dio _dio = Dio(

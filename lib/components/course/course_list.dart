@@ -1,12 +1,19 @@
+import 'package:edu_lab/entities/models/course_model.dart';
 import 'package:flutter/material.dart';
-import 'package:edu_lab/entities/course/course.dart';
 import 'package:go_router/go_router.dart';
 import 'course_card.dart';
 
 class CourseList extends StatelessWidget {
-  final List<Course> courses;
+  final List<CourseModel> courses;
+  final Function onDeleteCourse;
+  final Function onEditCourse;
 
-  const CourseList({super.key, required this.courses});
+  const CourseList({
+    super.key,
+    required this.courses,
+    required this.onDeleteCourse,
+    required this.onEditCourse,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +26,17 @@ class CourseList extends StatelessWidget {
           course: courses[index],
           onGoToCourse: () {
             context.go('/course/${courses[index].id}');
+          },
+          onDeleteCourse: () {
+            onDeleteCourse(courses[index].id);
+          },
+          onEditCourse: () {
+            onEditCourse(
+              courses[index].id,
+              courses[index].title,
+              courses[index].description,
+              courses[index].imagePath,
+            );
           },
         );
       },

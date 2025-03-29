@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:edu_lab/entities/course/add_course.dart';
 import 'package:edu_lab/entities/course/add_module.dart';
+import 'package:edu_lab/entities/requests/course_request.dart';
 import 'package:edu_lab/utils/api_client.dart';
-import 'package:edu_lab/utils/response.dart';
+import 'package:edu_lab/utils/api_response.dart';
 
 class CourseService {
   var apiClient = ApiClient();
@@ -35,11 +35,11 @@ class CourseService {
     }
   }
 
-  Future<ApiResponse> addCourse(AddCourse addCourseModal) async {
+  Future<ApiResponse> addCourse(CourseRequest request) async {
     try {
       var response = await apiClient.dio.post(
         '/Course',
-        data: addCourseModal.toJson(),
+        data: request.toJson(),
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
@@ -68,6 +68,38 @@ class CourseService {
       }
     } catch (e) {
       return ApiResponse.fromError('Failed to add module');
+    }
+  }
+
+  Future<ApiResponse> deleteCourse(String id) async {
+    try {
+      var response = await apiClient.dio.delete('/Course/$id');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to delete course');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to delete course');
+    }
+  }
+
+  Future<ApiResponse> updateCourse(String id, CourseRequest request) async {
+    try {
+      var response = await apiClient.dio.put(
+        '/Course/$id',
+        data: request.toJson(),
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to update course');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to update course');
     }
   }
 }

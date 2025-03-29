@@ -1,10 +1,9 @@
 import 'package:edu_lab/entities/course/module.dart';
-import 'package:edu_lab/entities/translation.dart';
 
 class CourseById {
   final String id;
-  final Translation title;
-  final Translation description;
+  final String title;
+  final String? description;
   final String? imagePath;
   final DateTime createdAt;
   final List<Module> modules;
@@ -21,8 +20,8 @@ class CourseById {
   factory CourseById.fromJson(Map<String, dynamic> json) {
     return CourseById(
       id: json['id'],
-      title: Translation.fromJson(json['title']),
-      description: Translation.fromJson(json['description']),
+      title: json['title'],
+      description: json['description'],
       imagePath: json['imagePath'],
       createdAt: DateTime.parse(json['createdAt']),
       modules:
