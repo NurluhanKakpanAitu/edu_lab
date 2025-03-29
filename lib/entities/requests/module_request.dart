@@ -5,6 +5,7 @@ class ModuleRequest {
   String? presentationPath;
   String? taskPath;
   String courseId;
+  int order;
 
   ModuleRequest({
     required this.title,
@@ -13,6 +14,7 @@ class ModuleRequest {
     this.presentationPath,
     this.taskPath,
     required this.courseId,
+    this.order = 0,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class ModuleRequest {
       'presentationPath': presentationPath,
       'taskPath': taskPath,
       'courseId': courseId,
+      'order': order,
     };
   }
 }

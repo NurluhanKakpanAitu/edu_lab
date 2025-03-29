@@ -2,6 +2,7 @@ import 'package:edu_lab/entities/models/module_model.dart';
 import 'package:edu_lab/entities/requests/module_request.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ModuleModal extends StatefulWidget {
   final String courseId;
@@ -25,6 +26,11 @@ class _ModuleModalState extends State<ModuleModal> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _videoUrlController = TextEditingController();
+  final _orderController = TextEditingController();
+  final _taskController = TextEditingController();
+  String? _uploadedVideoPath;
+  String? _uploadedPresentationPath;
   final _courseService = CourseService();
   bool _isSubmitting = false;
 
@@ -35,6 +41,31 @@ class _ModuleModalState extends State<ModuleModal> {
       // Pre-fill fields if updating a module
       _titleController.text = widget.module!.title;
       _descriptionController.text = widget.module!.description ?? '';
+      _videoUrlController.text = widget.module!.videoPath ?? '';
+      _orderController.text = widget.module!.order.toString();
+      _uploadedVideoPath = widget.module!.videoPath;
+      _uploadedPresentationPath = widget.module!.presentationPath;
+      _taskController.text = widget.module!.taskPath ?? '';
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.video);
+    if (result != null && result.files.single.path != null) {
+      setState(() {
+        _uploadedVideoPath = result.files.single.path;
+        _videoUrlController
+            .clear(); // Clear the video URL if a file is selected
+      });
+    }
+  }
+
+  Future<void> _pickPresentation() async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.any);
+    if (result != null && result.files.single.path != null) {
+      setState(() {
+        _uploadedPresentationPath = result.files.single.path;
+      });
     }
   }
 
@@ -48,13 +79,12 @@ class _ModuleModalState extends State<ModuleModal> {
     final request = ModuleRequest(
       title: _titleController.text,
       description: _descriptionController.text,
-      videoPath: widget.module?.videoPath,
-      presentationPath: widget.module?.presentationPath,
-      taskPath: widget.module?.taskPath,
+      videoPath: _uploadedVideoPath ?? _videoUrlController.text,
+      presentationPath: _uploadedPresentationPath,
+      taskPath: _taskController.text,
       courseId: widget.courseId,
+      order: int.parse(_orderController.text),
     );
-
-
 
     if (widget.module == null) {
       final response = await _courseService.addModule(request);
@@ -149,6 +179,7 @@ class _ModuleModalState extends State<ModuleModal> {
                   labelText: 'Модуль сипаттамасы',
                   border: OutlineInputBorder(),
                 ),
+                maxLines: 3,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Модуль сипаттамасы міндетті түрде толтырылуы керек';
@@ -157,12 +188,82 @@ class _ModuleModalState extends State<ModuleModal> {
                 },
               ),
               const SizedBox(height: 16),
+              TextFormField(
+                controller: _orderController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Модуль реті',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Модуль реті міндетті түрде толтырылуы керек';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Модуль реті сан болуы керек';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _taskController,
+                decoration: const InputDecoration(
+                  labelText: 'Модуль тапсырмасы',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Модуль тапсырмасы міндетті түрде толтырылуы керек';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _pickVideo,
+                child: const Text('Видео жүктеу'),
+              ),
+              if (_uploadedVideoPath != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    _uploadedVideoPath!,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _videoUrlController,
+                decoration: const InputDecoration(
+                  labelText: 'Видео сілтемесі',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _pickPresentation,
+                child: const Text('Презентация жүктеу'),
+              ),
+              if (_uploadedPresentationPath != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    _uploadedPresentationPath!,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _isSubmitting ? null : _submitModule,
                 child:
                     _isSubmitting
                         ? const CircularProgressIndicator()
-                        : Text(widget.module == null ? 'Қосу' : 'Өзгерту'),
+                        : Text(
+                          widget.module == null
+                              ? 'Модульді қосу'
+                              : 'Иодулді өзгерту',
+                        ),
               ),
             ],
           ),
@@ -175,6 +276,8 @@ class _ModuleModalState extends State<ModuleModal> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _videoUrlController.dispose();
+    _orderController.dispose();
     super.dispose();
   }
 }

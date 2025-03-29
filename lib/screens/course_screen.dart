@@ -163,8 +163,13 @@ class CourseScreenState extends State<CourseScreen> {
                               !_expandedModules[moduleId]!;
                         });
                       },
-                      onGoToTasks: (moduleId) {
-                        context.go('/module/${widget.courseId}/test/$moduleId');
+                      goToModule: (moduleId) {
+                        context.go(
+                          '/module/$moduleId',
+                          extra: course.modules.firstWhere(
+                            (module) => module.id == moduleId,
+                          ),
+                        );
                       },
                       onEditModule: (module) {
                         _showModuleModal(

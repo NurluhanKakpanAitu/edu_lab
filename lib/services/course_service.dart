@@ -134,4 +134,18 @@ class CourseService {
       return ApiResponse.fromError('Failed to delete module');
     }
   }
+
+  Future<ApiResponse> getModule(String moduleId) async {
+    try {
+      var response = await apiClient.dio.get('/Module/$moduleId');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to fetch modules');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to fetch modules');
+    }
+  }
 }

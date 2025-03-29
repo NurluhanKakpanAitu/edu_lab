@@ -5,7 +5,7 @@ class ModuleList extends StatelessWidget {
   final List<ModuleModel> modules;
   final Map<String, bool> expandedModules;
   final Function(String) onToggleExpand;
-  final Function(String) onGoToTasks;
+  final Function(String) goToModule;
   final Function(ModuleModel)? onEditModule;
 
   const ModuleList({
@@ -13,7 +13,7 @@ class ModuleList extends StatelessWidget {
     required this.modules,
     required this.expandedModules,
     required this.onToggleExpand,
-    required this.onGoToTasks,
+    required this.goToModule,
     this.onEditModule,
   });
 
@@ -48,7 +48,7 @@ class ModuleList extends StatelessWidget {
                             color: Colors.blue,
                           ),
                           tooltip: 'Тапсырмаларға өту',
-                          onPressed: () => onGoToTasks(module.id),
+                          onPressed: () => goToModule(module.id),
                         ),
                       ],
                     ),

@@ -6,6 +6,8 @@ class ModuleModel {
   String? presentationPath;
   String? taskPath;
   DateTime createdAt;
+  int order;
+  String courseId;
 
   ModuleModel({
     required this.id,
@@ -15,6 +17,8 @@ class ModuleModel {
     this.presentationPath,
     this.taskPath,
     required this.createdAt,
+    this.order = 0,
+    this.courseId = '',
   });
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class ModuleModel {
       presentationPath: json['presentationPath'] as String?,
       taskPath: json['taskPath'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      order: json['order'] as int? ?? 0,
+      courseId: json['courseId'] as String? ?? '',
     );
   }
 
@@ -38,6 +44,8 @@ class ModuleModel {
       'presentation_path': presentationPath,
       'task_path': taskPath,
       'created_at': createdAt.toIso8601String(),
+      'order': order,
+      'courseId': courseId,
     };
   }
 }
