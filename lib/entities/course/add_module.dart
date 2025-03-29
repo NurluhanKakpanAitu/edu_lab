@@ -1,8 +1,6 @@
-import 'package:edu_lab/entities/translation.dart';
-
 class AddModule {
-  final Translation title;
-  final Translation description;
+  final String title;
+  final String? description;
   final String? videoPath;
   final String courseId;
 
@@ -15,8 +13,8 @@ class AddModule {
 
   Map<String, dynamic> toJson() {
     return {
-      'title': title.toJson(),
-      'description': description.toJson(),
+      'title': title,
+      'description': description,
       'videoPath': videoPath,
       'courseId': courseId,
     };

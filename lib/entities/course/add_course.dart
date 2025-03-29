@@ -1,8 +1,6 @@
-import 'package:edu_lab/entities/translation.dart';
-
 class AddCourse {
-  final Translation title;
-  final Translation description;
+  final String title;
+  final String? description;
   final String? imagePath;
 
   AddCourse({
@@ -12,10 +10,6 @@ class AddCourse {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'title': title.toJson(),
-      'description': description.toJson(),
-      'imagePath': imagePath,
-    };
+    return {'title': title, 'description': description, 'imagePath': imagePath};
   }
 }

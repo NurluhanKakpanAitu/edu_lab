@@ -2,14 +2,12 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:edu_lab/entities/token.dart';
-import 'package:edu_lab/main.dart';
-import 'package:edu_lab/router.dart';
 import 'package:edu_lab/utils/token_storage.dart';
 
 class ApiClient {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://85.202.192.76:8080/api',
+      baseUrl: 'http://localhost:5148/api',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
     ),
@@ -23,8 +21,6 @@ class ApiClient {
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-          options.headers['Lang'] =
-              MyApp.getLocale(navigatorKey.currentContext!)?.languageCode;
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
@@ -39,8 +35,6 @@ class ApiClient {
               return handler.resolve(await _dio.fetch(e.requestOptions));
             }
           }
-          e.requestOptions.headers['Lang'] =
-              MyApp.getLocale(navigatorKey.currentContext!)?.languageCode;
           return handler.next(e);
         },
       ),

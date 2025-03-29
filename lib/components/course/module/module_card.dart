@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:edu_lab/components/shared/video_player.dart';
-import 'package:edu_lab/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ModuleCard extends StatelessWidget {
@@ -25,8 +24,6 @@ class ModuleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -76,7 +73,7 @@ class ModuleCard extends StatelessWidget {
                         launchUrl(Uri.parse(videoPath!));
                       },
                       child: Text(
-                        localizations.translate('openVideoLink'),
+                        'Видео көру',
                         style: const TextStyle(color: Colors.blue),
                       ),
                     )
@@ -96,7 +93,7 @@ class ModuleCard extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  localizations.translate('goToTasks'),
+                  'Тапсырмаларға өту',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

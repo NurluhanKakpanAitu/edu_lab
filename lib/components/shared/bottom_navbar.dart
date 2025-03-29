@@ -1,11 +1,8 @@
-import 'package:edu_lab/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class BottomNavbar extends StatefulWidget {
-  const BottomNavbar({super.key, required this.locale});
-
-  final String locale;
+  const BottomNavbar({super.key});
 
   @override
   BottomNavbarState createState() => BottomNavbarState();
@@ -24,19 +21,12 @@ class BottomNavbarState extends State<BottomNavbar> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
     final currentIndex = _getCurrentIndex(context);
 
     return BottomNavigationBar(
       items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: localizations.translate('home'),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: localizations.translate('profile'),
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Басты бет'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профиль'),
       ],
       currentIndex: currentIndex,
       selectedItemColor: Colors.blueAccent,

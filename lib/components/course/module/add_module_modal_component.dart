@@ -1,8 +1,5 @@
 import 'dart:io';
-
-import 'package:edu_lab/app_localizations.dart';
 import 'package:edu_lab/entities/course/add_module.dart';
-import 'package:edu_lab/entities/translation.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:edu_lab/services/file_service.dart';
 import 'package:file_picker/file_picker.dart';
@@ -24,16 +21,8 @@ class AddModuleModal extends StatefulWidget {
 
 class _AddModuleModalState extends State<AddModuleModal> {
   final _formKey = GlobalKey<FormState>();
-  final _titleControllers = {
-    'en': TextEditingController(),
-    'ru': TextEditingController(),
-    'kz': TextEditingController(),
-  };
-  final _descriptionControllers = {
-    'en': TextEditingController(),
-    'ru': TextEditingController(),
-    'kz': TextEditingController(),
-  };
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
   final _videoUrlController = TextEditingController();
   final _fileService = FileService();
   bool _isSubmitting = false;
@@ -72,21 +61,10 @@ class _AddModuleModalState extends State<AddModuleModal> {
   void _submitModule() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final title = {
-      for (var entry in _titleControllers.entries) entry.key: entry.value.text,
-    };
-
-    final description = {
-      for (var entry in _descriptionControllers.entries)
-        entry.key: entry.value.text,
-    };
-
-    final videoPath = _uploadedVideoPath ?? _videoUrlController.text;
-
     final module = AddModule(
-      title: Translation.fromJson(title),
-      description: Translation.fromJson(description),
-      videoPath: videoPath,
+      title: _titleController.text,
+      description: _descriptionController.text,
+      videoPath: _uploadedVideoPath ?? _videoUrlController.text,
       courseId: widget.courseId,
     );
 
@@ -101,17 +79,11 @@ class _AddModuleModalState extends State<AddModuleModal> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context).translate('moduleAddFailed'),
+            response.errorMessage ?? 'Модульді қосу сәтсіз аяқталды',
           ),
         ),
       );
     }
-
-    setState(() {
-      _isSubmitting = true;
-    });
-
-    if (!mounted) return;
 
     setState(() {
       _isSubmitting = false;
@@ -120,8 +92,6 @@ class _AddModuleModalState extends State<AddModuleModal> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -136,48 +106,44 @@ class _AddModuleModalState extends State<AddModuleModal> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                localizations.translate('addModule'),
+              const Text(
+                'Модуль қосу',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ..._titleControllers.entries.map((entry) {
-                final language = entry.key;
-                final controller = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: TextFormField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      labelText: localizations.translate('title_$language'),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                );
-              }),
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Атауы (қазақша)',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Атауы міндетті түрде толтырылуы керек';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 16),
-              ..._descriptionControllers.entries.map((entry) {
-                final language = entry.key;
-                final controller = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: TextFormField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      labelText: localizations.translate(
-                        'description_$language',
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                );
-              }),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Сипаттамасы (қазақша)',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Сипаттамасы міндетті түрде толтырылуы керек';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   ElevatedButton(
                     onPressed: _pickFile,
-                    child: Text(localizations.translate('uploadVideo')),
+                    child: const Text('Бейне жүктеу'),
                   ),
                   const SizedBox(width: 16),
                   if (_uploadedVideoPath != null)
@@ -190,15 +156,15 @@ class _AddModuleModalState extends State<AddModuleModal> {
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
-                localizations.translate('videoUrl'),
+              const Text(
+                'Немесе бейненің сілтемесін енгізіңіз:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _videoUrlController,
-                decoration: InputDecoration(
-                  labelText: localizations.translate('videoUrlHint'),
+                decoration: const InputDecoration(
+                  labelText: 'Бейне сілтемесі',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -208,7 +174,7 @@ class _AddModuleModalState extends State<AddModuleModal> {
                 child:
                     _isSubmitting
                         ? const CircularProgressIndicator()
-                        : Text(localizations.translate('submit')),
+                        : const Text('Қосу'),
               ),
             ],
           ),
@@ -219,12 +185,8 @@ class _AddModuleModalState extends State<AddModuleModal> {
 
   @override
   void dispose() {
-    for (var controller in _titleControllers.values) {
-      controller.dispose();
-    }
-    for (var controller in _descriptionControllers.values) {
-      controller.dispose();
-    }
+    _titleController.dispose();
+    _descriptionController.dispose();
     _videoUrlController.dispose();
     super.dispose();
   }

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:edu_lab/app_localizations.dart';
 import 'package:edu_lab/services/test_service.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -21,16 +20,8 @@ class AddPracticeWorkModal extends StatefulWidget {
 
 class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
   final _formKey = GlobalKey<FormState>();
-  final _titleControllers = {
-    'en': TextEditingController(),
-    'ru': TextEditingController(),
-    'kz': TextEditingController(),
-  };
-  final _descriptionControllers = {
-    'en': TextEditingController(),
-    'ru': TextEditingController(),
-    'kz': TextEditingController(),
-  };
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
   File? _selectedImage;
   bool _isSubmitting = false;
 
@@ -52,16 +43,8 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
     });
 
     final practiceWorkData = {
-      "title": {
-        "en": _titleControllers['en']!.text,
-        "ru": _titleControllers['ru']!.text,
-        "kz": _titleControllers['kz']!.text,
-      },
-      "description": {
-        "en": _descriptionControllers['en']!.text,
-        "ru": _descriptionControllers['ru']!.text,
-        "kz": _descriptionControllers['kz']!.text,
-      },
+      "title": {"kz": _titleController.text},
+      "description": {"kz": _descriptionController.text},
       "imagePath": _selectedImage?.path,
       "moduleId": widget.moduleId,
     };
@@ -74,8 +57,8 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
 
     if (!response.success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.errorMessage ?? 'Failed to add practice work'),
+        const SnackBar(
+          content: Text('Тәжірибелік жұмысты қосу сәтсіз аяқталды'),
         ),
       );
       return;
@@ -87,8 +70,6 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -103,46 +84,42 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                localizations.translate('addPracticeWork'),
+              const Text(
+                'Тәжірибелік жұмыс қосу',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ..._titleControllers.entries.map((entry) {
-                final language = entry.key;
-                final controller = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: TextFormField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      labelText: localizations.translate('title_$language'),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                );
-              }),
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Атауы (қазақша)',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Атауы міндетті түрде толтырылуы керек';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 16),
-              ..._descriptionControllers.entries.map((entry) {
-                final language = entry.key;
-                final controller = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: TextFormField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      labelText: localizations.translate(
-                        'description_$language',
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                );
-              }),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Сипаттамасы (қазақша)',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Сипаттамасы міндетті түрде толтырылуы керек';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _pickImage,
-                child: Text(localizations.translate('pickImage')),
+                child: const Text('Суретті жүктеу'),
               ),
               if (_selectedImage != null)
                 Padding(
@@ -158,7 +135,7 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
                 child:
                     _isSubmitting
                         ? const CircularProgressIndicator()
-                        : Text(localizations.translate('submit')),
+                        : const Text('Қосу'),
               ),
             ],
           ),
@@ -169,12 +146,8 @@ class _AddPracticeWorkModalState extends State<AddPracticeWorkModal> {
 
   @override
   void dispose() {
-    for (var controller in _titleControllers.values) {
-      controller.dispose();
-    }
-    for (var controller in _descriptionControllers.values) {
-      controller.dispose();
-    }
+    _titleController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 }

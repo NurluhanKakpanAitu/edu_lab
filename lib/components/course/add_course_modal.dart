@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:edu_lab/app_localizations.dart';
 import 'package:edu_lab/entities/course/add_course.dart';
-import 'package:edu_lab/entities/translation.dart';
 import 'package:edu_lab/services/file_service.dart';
 import 'package:flutter/material.dart';
 import 'package:edu_lab/entities/course/course.dart';
@@ -20,16 +18,9 @@ class AddCourseModal extends StatefulWidget {
 
 class _AddCourseModalState extends State<AddCourseModal> {
   final _formKey = GlobalKey<FormState>();
-  final _titleControllers = {
-    'en': TextEditingController(),
-    'ru': TextEditingController(),
-    'kz': TextEditingController(),
-  };
-  final _descriptionControllers = {
-    'en': TextEditingController(),
-    'ru': TextEditingController(),
-    'kz': TextEditingController(),
-  };
+
+  final _titleControllers = TextEditingController();
+  final _descriptionControllers = TextEditingController();
   final _courseService = CourseService();
   final _fileService = FileService();
   bool _isSubmitting = false;
@@ -48,11 +39,7 @@ class _AddCourseModalState extends State<AddCourseModal> {
       if (!mounted) return;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).translate('imageUploadFailed'),
-          ),
-        ),
+        SnackBar(content: Text('Failed to upload image: ${e.toString()}')),
       );
     }
   }
@@ -69,37 +56,9 @@ class _AddCourseModalState extends State<AddCourseModal> {
   void _submitCourse() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_titleControllers.values.every(
-      (controller) => controller.text.isEmpty,
-    )) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('At least one title must be filled.')),
-      );
-      return;
-    }
-
-    if (_descriptionControllers.values.every(
-      (controller) => controller.text.isEmpty,
-    )) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('At least one description must be filled.'),
-        ),
-      );
-      return;
-    }
-
     final addCourse = AddCourse(
-      title: Translation(
-        en: _titleControllers['en']!.text,
-        ru: _titleControllers['ru']!.text,
-        kz: _titleControllers['kz']!.text,
-      ),
-      description: Translation(
-        en: _descriptionControllers['en']!.text,
-        ru: _descriptionControllers['ru']!.text,
-        kz: _descriptionControllers['kz']!.text,
-      ),
+      title: _titleControllers.text,
+      description: _descriptionControllers.text,
       imagePath: _uploadedFilePath,
     );
 
@@ -116,7 +75,7 @@ class _AddCourseModalState extends State<AddCourseModal> {
     });
 
     if (response.success) {
-      widget.onCourseAdded(Course.fromModal(addCourse, response.data));
+      // widget.onCourseAdded(Course.fromModal(addCourse, response.data));
       Navigator.pop(context); // Close the modal
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +88,6 @@ class _AddCourseModalState extends State<AddCourseModal> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -145,58 +103,44 @@ class _AddCourseModalState extends State<AddCourseModal> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                localizations.translate('addCourse'),
+                'Курс қосу',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
-                localizations.translate('title'),
+                'Қурстың атауы',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              ..._titleControllers.entries.map((entry) {
-                final language = entry.key;
-                final controller = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: TextFormField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      labelText: localizations.translate('title_$language'),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                );
-              }),
+              TextFormField(
+                controller: _titleControllers,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: 'Атауы',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 16),
               Text(
-                localizations.translate('description'),
+                'Курстың сипаттамасы',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              ..._descriptionControllers.entries.map((entry) {
-                final language = entry.key;
-                final controller = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: TextFormField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      labelText: localizations.translate(
-                        'description_$language',
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                );
-              }),
+              TextFormField(
+                controller: _descriptionControllers,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: 'Сипаттамасы',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ElevatedButton(
                     onPressed: _pickImage,
-                    child: Text(localizations.translate('uploadImage')),
+                    child: Text('Суретті жүктеу'),
                   ),
                   const SizedBox(height: 16),
                   if (_uploadedFilePath != null)
@@ -219,7 +163,7 @@ class _AddCourseModalState extends State<AddCourseModal> {
                 child:
                     _isSubmitting
                         ? const CircularProgressIndicator()
-                        : Text(localizations.translate('submit')),
+                        : Text('Курсты қосу'),
               ),
             ],
           ),
@@ -230,12 +174,8 @@ class _AddCourseModalState extends State<AddCourseModal> {
 
   @override
   void dispose() {
-    for (var controller in _titleControllers.values) {
-      controller.dispose();
-    }
-    for (var controller in _descriptionControllers.values) {
-      controller.dispose();
-    }
+    _titleControllers.dispose();
+    _descriptionControllers.dispose();
     super.dispose();
   }
 }

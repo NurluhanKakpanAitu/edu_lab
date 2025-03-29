@@ -4,11 +4,9 @@ import 'package:edu_lab/components/course/module/module_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
 import 'package:edu_lab/entities/course/course_by_id.dart';
-import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:flutter/material.dart';
-import 'package:edu_lab/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 class CourseScreen extends StatefulWidget {
@@ -32,16 +30,8 @@ class CourseScreenState extends State<CourseScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
     _loadCourse();
     loadRole();
-  }
-
-  void _changeLanguage(Locale locale) {
-    setState(() {
-      _selectedLocale = locale;
-    });
-    MyApp.setLocale(context, locale);
   }
 
   void _loadCourse() async {
@@ -91,13 +81,9 @@ class CourseScreenState extends State<CourseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
     return Scaffold(
       appBar: CustomAppBar(
         title: 'EduLab',
-        selectedLocale: _selectedLocale,
-        onLocaleChange: _changeLanguage,
         onBackButtonPressed: () {
           context.go('/home');
         },
@@ -124,7 +110,7 @@ class CourseScreenState extends State<CourseScreen> {
                           'No Description',
                     ),
                     Text(
-                      localizations.translate('modules'),
+                      'Модульдар',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -153,7 +139,7 @@ class CourseScreenState extends State<CourseScreen> {
                                 const Icon(Icons.add, color: Colors.blue),
                                 const SizedBox(width: 8),
                                 Text(
-                                  localizations.translate('addModule'),
+                                  'Модуль қосу',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

@@ -1,4 +1,3 @@
-import 'package:edu_lab/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ProfileForm extends StatelessWidget {
@@ -19,15 +18,13 @@ class ProfileForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
     return Column(
       children: [
         TextField(
           controller: nicknameController,
           enabled: isEditing,
           decoration: InputDecoration(
-            labelText: localizations.translate('nickname'),
+            labelText: 'Қолданушы аты',
             prefixIcon: const Icon(Icons.person),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -39,7 +36,7 @@ class ProfileForm extends StatelessWidget {
           controller: emailController,
           enabled: isEditing,
           decoration: InputDecoration(
-            labelText: localizations.translate('email'),
+            labelText: 'Электрондық пошта',
             prefixIcon: const Icon(Icons.email),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -51,7 +48,7 @@ class ProfileForm extends StatelessWidget {
           controller: aboutController,
           enabled: isEditing,
           decoration: InputDecoration(
-            labelText: localizations.translate('about'),
+            labelText: 'Өзіңіз туралы',
             prefixIcon: const Icon(Icons.info),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -64,7 +61,7 @@ class ProfileForm extends StatelessWidget {
             controller: passwordController,
             obscureText: true,
             decoration: InputDecoration(
-              labelText: localizations.translate('newPasswordOptional'),
+              labelText: 'Жаңа құпия сөз',
               prefixIcon: const Icon(Icons.lock),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),

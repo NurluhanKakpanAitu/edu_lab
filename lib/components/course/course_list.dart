@@ -5,9 +5,8 @@ import 'course_card.dart';
 
 class CourseList extends StatelessWidget {
   final List<Course> courses;
-  final Locale locale;
 
-  const CourseList({super.key, required this.courses, required this.locale});
+  const CourseList({super.key, required this.courses});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +17,6 @@ class CourseList extends StatelessWidget {
       itemBuilder: (context, index) {
         return CourseCard(
           course: courses[index],
-          locale: locale,
           onGoToCourse: () {
             context.go('/course/${courses[index].id}');
           },

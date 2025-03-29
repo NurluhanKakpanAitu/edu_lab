@@ -1,4 +1,3 @@
-import 'package:edu_lab/app_localizations.dart';
 import 'package:edu_lab/components/course/add_course_modal.dart';
 import 'package:edu_lab/components/course/course_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
@@ -6,7 +5,6 @@ import 'package:edu_lab/components/shared/bottom_navbar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
 import 'package:edu_lab/entities/course/course.dart';
 import 'package:edu_lab/entities/user.dart';
-import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  late Locale _selectedLocale;
-
   var courseService = CourseService();
   var authService = AuthService();
   late List<Course> courses = [];
@@ -34,7 +30,6 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     _loadUserData();
     _loadCourses();
-    _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
     getUserRole();
   }
 
@@ -84,13 +79,6 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _changeLanguage(Locale locale) {
-    setState(() {
-      _selectedLocale = locale;
-    });
-    MyApp.setLocale(context, locale);
-  }
-
   void _showAddCourseModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -112,14 +100,8 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'EduLab',
-        selectedLocale: _selectedLocale,
-        onLocaleChange: _changeLanguage,
-      ),
+      appBar: CustomAppBar(title: 'EduLab'),
       body:
           _isLoading
               ? const LoadingIndicator() // Use the LoadingIndicator component
@@ -130,7 +112,7 @@ class HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        localizations.translate('courses'),
+                        'Курстар',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -139,13 +121,12 @@ class HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: 10),
                       CourseList(
                         courses: courses,
-                        locale: _selectedLocale,
                       ), // Use the CourseList component
                     ],
                   ),
                 ),
               ),
-      bottomNavigationBar: BottomNavbar(locale: _selectedLocale.languageCode),
+      bottomNavigationBar: BottomNavbar(),
       floatingActionButton:
           userRole == 1
               ? FloatingActionButton(

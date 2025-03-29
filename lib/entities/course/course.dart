@@ -1,27 +1,26 @@
-import 'package:edu_lab/entities/course/add_course.dart';
-import 'package:edu_lab/entities/translation.dart';
-
 class Course {
   String? id;
-  Translation? title;
-  Translation? description;
+  String title;
+  String? description;
   String? imagePath;
 
-  Course({this.id, this.title, this.description, this.imagePath});
+  Course({this.id, required this.title, this.description, this.imagePath});
 
-  Course.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    title = Translation.fromJson(json['title']);
-    description = Translation.fromJson(json['description']);
-    imagePath = json['imagePath'];
+  factory Course.fromJson(Map<String, dynamic> json) {
+    return Course(
+      id: json['id'] as String?,
+      title: json['title'] as String,
+      description: json['description'] as String?,
+      imagePath: json['imagePath'] as String?,
+    );
   }
 
-  static Course fromModal(AddCourse addCourse, String id) {
-    return Course(
-      id: id,
-      title: addCourse.title,
-      description: addCourse.description,
-      imagePath: addCourse.imagePath,
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'imagePath': imagePath,
+    };
   }
 }

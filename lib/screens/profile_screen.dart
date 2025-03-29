@@ -6,14 +6,12 @@ import 'package:edu_lab/components/profile/profile_form.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/bottom_navbar.dart';
 import 'package:edu_lab/entities/user.dart';
-import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/file_service.dart';
 import 'package:edu_lab/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import '../app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -34,12 +32,10 @@ class ProfileScreenState extends State<ProfileScreen> {
   final UserService _userService = UserService();
   final FileService _fileService = FileService();
   late String currentUserId;
-  late Locale _selectedLocale;
 
   @override
   void initState() {
     super.initState();
-    _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
     _loadUserData();
   }
 
@@ -66,13 +62,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       }
       if (!mounted) return;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).translate('imageUploadFailed'),
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('')));
     }
   }
 
@@ -103,13 +93,9 @@ class ProfileScreenState extends State<ProfileScreen> {
       });
 
       if (response.success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).translate('profileUpdated'),
-            ),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Профиль обновлен')));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -119,11 +105,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).translate('profileUpdateFailed'),
-          ),
-        ),
+        SnackBar(content: Text('Error occurred while updating profile: $e')),
       );
     }
   }
@@ -142,21 +124,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _changeLanguage(Locale locale) {
-    setState(() {
-      _selectedLocale = locale;
-    });
-    MyApp.setLocale(context, locale);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'EduLab',
-        selectedLocale: _selectedLocale,
-        onLocaleChange: _changeLanguage,
-      ),
+      appBar: CustomAppBar(title: 'EduLab'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -189,7 +160,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavbar(locale: _selectedLocale.languageCode),
+      bottomNavigationBar: BottomNavbar(),
     );
   }
 

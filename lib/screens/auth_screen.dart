@@ -1,7 +1,4 @@
-import 'package:edu_lab/app_localizations.dart';
-import 'package:edu_lab/main.dart';
 import 'package:edu_lab/services/auth_service.dart';
-import 'package:edu_lab/components/shared/language_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,23 +12,15 @@ class AuthScreen extends StatefulWidget {
 class AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  late Locale _selectedLocale;
   final AuthService _authService = AuthService();
   bool _isButtonEnabled = false;
-
-  void _changeLanguage(Locale locale) {
-    setState(() {
-      _selectedLocale = locale;
-    });
-    MyApp.setLocale(context, locale);
-  }
+  bool _isShowPassword = false;
 
   @override
   void initState() {
     super.initState();
     _emailController.addListener(_updateButtonState);
     _passwordController.addListener(_updateButtonState);
-    _selectedLocale = MyApp.getLocale(context) ?? Locale('kk', '');
   }
 
   void _updateButtonState() {
@@ -83,17 +72,10 @@ class AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.translate('auth')),
+        title: const Text('Кіру/Тіркелу'),
         backgroundColor: Colors.blueAccent,
-        actions: [
-          LanguageDropdown(
-            selectedLocale: _selectedLocale,
-            onLocaleChange: _changeLanguage,
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -104,7 +86,7 @@ class AuthScreenState extends State<AuthScreen> {
             TextField(
               controller: _emailController,
               decoration: InputDecoration(
-                labelText: localizations.translate('email'),
+                labelText: 'Электрондық пошта',
                 prefixIcon: Icon(Icons.email),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -115,13 +97,23 @@ class AuthScreenState extends State<AuthScreen> {
             TextField(
               controller: _passwordController,
               decoration: InputDecoration(
-                labelText: localizations.translate('password'),
+                labelText: 'Құпия сөз',
                 prefixIcon: Icon(Icons.lock),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isShowPassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isShowPassword = !_isShowPassword;
+                    });
+                  },
+                ),
               ),
-              obscureText: true,
+              obscureText: !_isShowPassword,
             ),
             SizedBox(height: 24.0),
             ElevatedButton(
@@ -134,7 +126,7 @@ class AuthScreenState extends State<AuthScreen> {
                 padding: EdgeInsets.symmetric(vertical: 16.0),
               ),
               child: Text(
-                localizations.translate('login'),
+                'Кіру',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
@@ -154,7 +146,7 @@ class AuthScreenState extends State<AuthScreen> {
                 padding: EdgeInsets.symmetric(vertical: 16.0),
               ),
               child: Text(
-                localizations.translate('register'),
+                'Тіркелу',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,

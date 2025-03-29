@@ -1,4 +1,3 @@
-import 'package:edu_lab/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ProfileActions extends StatelessWidget {
@@ -17,8 +16,6 @@ class ProfileActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
     return Column(
       children: [
         ElevatedButton(
@@ -31,9 +28,7 @@ class ProfileActions extends StatelessWidget {
             ),
           ),
           child: Text(
-            isEditing
-                ? localizations.translate('saveChanges')
-                : localizations.translate('editProfile'),
+            isEditing ? 'Өзгерістерді сақтау' : 'Профильді өңдеу',
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
@@ -48,7 +43,7 @@ class ProfileActions extends StatelessWidget {
             ),
           ),
           child: Text(
-            localizations.translate('logout'),
+            'Шығу',
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
