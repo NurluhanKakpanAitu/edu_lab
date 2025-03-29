@@ -1,12 +1,12 @@
-import 'package:edu_lab/components/course/module/module_card.dart';
-import 'package:edu_lab/entities/course/module.dart';
+import 'package:edu_lab/entities/models/module_model.dart';
 import 'package:flutter/material.dart';
 
 class ModuleList extends StatelessWidget {
-  final List<Module> modules;
+  final List<ModuleModel> modules;
   final Map<String, bool> expandedModules;
   final Function(String) onToggleExpand;
   final Function(String) onGoToTasks;
+  final Function(ModuleModel)? onEditModule;
 
   const ModuleList({
     super.key,
@@ -14,28 +14,55 @@ class ModuleList extends StatelessWidget {
     required this.expandedModules,
     required this.onToggleExpand,
     required this.onGoToTasks,
+    this.onEditModule,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: modules.length,
-      itemBuilder: (context, index) {
-        final module = modules[index];
-        final isExpanded = expandedModules[module.id] ?? false;
-
-        return ModuleCard(
-          id: module.id,
-          title: module.title,
-          description: module.description ?? 'No Description',
-          videoPath: module.videoPath,
-          isExpanded: isExpanded,
-          onToggleExpand: () => onToggleExpand(module.id),
-          onGoToTasks: () => onGoToTasks(module.id),
-        );
-      },
+    return Column(
+      children:
+          modules.map((module) {
+            return Card(
+              elevation: 4,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(module.title),
+                    subtitle: Text(module.description ?? ''),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.orange),
+                          tooltip: 'Өңдеу',
+                          onPressed: () {
+                            if (onEditModule != null) {
+                              onEditModule!(module);
+                            }
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.blue,
+                          ),
+                          tooltip: 'Тапсырмаларға өту',
+                          onPressed: () => onGoToTasks(module.id),
+                        ),
+                      ],
+                    ),
+                    onTap: () => onToggleExpand(module.id),
+                  ),
+                  if (expandedModules[module.id] ?? false)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(module.description ?? 'Сипаттама жоқ'),
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
     );
   }
 }

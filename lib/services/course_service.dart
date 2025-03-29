@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:edu_lab/entities/course/add_module.dart';
 import 'package:edu_lab/entities/requests/course_request.dart';
+import 'package:edu_lab/entities/requests/module_request.dart';
 import 'package:edu_lab/utils/api_client.dart';
 import 'package:edu_lab/utils/api_response.dart';
 
@@ -53,11 +53,11 @@ class CourseService {
     }
   }
 
-  Future<ApiResponse> addModule(AddModule module) async {
+  Future<ApiResponse> addModule(ModuleRequest request) async {
     try {
       var response = await apiClient.dio.post(
         '/Module',
-        data: module.toJson(),
+        data: request.toJson(),
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
@@ -100,6 +100,38 @@ class CourseService {
       }
     } catch (e) {
       return ApiResponse.fromError('Failed to update course');
+    }
+  }
+
+  Future<ApiResponse> updateModule(String id, ModuleRequest request) async {
+    try {
+      var response = await apiClient.dio.put(
+        '/Module/$id',
+        data: request.toJson(),
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to update module');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to update module');
+    }
+  }
+
+  Future<ApiResponse> deleteModule(String id) async {
+    try {
+      var response = await apiClient.dio.delete('/Module/$id');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.fromJson(response.data);
+      } else {
+        return ApiResponse.fromError('Failed to delete module');
+      }
+    } catch (e) {
+      return ApiResponse.fromError('Failed to delete module');
     }
   }
 }

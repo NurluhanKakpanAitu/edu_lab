@@ -19,10 +19,10 @@ class ModuleRequest {
     return {
       'title': title,
       'description': description,
-      'video_path': videoPath,
-      'presentation_path': presentationPath,
-      'task_path': taskPath,
-      'course_id': courseId,
+      'videoPath': videoPath,
+      'presentationPath': presentationPath,
+      'taskPath': taskPath,
+      'courseId': courseId,
     };
   }
 }

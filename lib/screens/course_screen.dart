@@ -1,9 +1,10 @@
 import 'package:edu_lab/components/course/course_header.dart';
-import 'package:edu_lab/components/course/module/add_module_modal_component.dart';
+import 'package:edu_lab/components/course/module/module_modal.dart';
 import 'package:edu_lab/components/course/module/module_list.dart';
 import 'package:edu_lab/components/shared/app_bar.dart';
 import 'package:edu_lab/components/shared/loading_indicator.dart';
-import 'package:edu_lab/entities/course/course_by_id.dart';
+import 'package:edu_lab/entities/models/course_model.dart';
+import 'package:edu_lab/entities/models/module_model.dart';
 import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
@@ -19,7 +20,7 @@ class CourseScreen extends StatefulWidget {
 }
 
 class CourseScreenState extends State<CourseScreen> {
-  late CourseById course;
+  late CourseModel course;
   var courseService = CourseService();
   var _isLoading = true;
   Map<String, bool> _expandedModules =
@@ -45,7 +46,7 @@ class CourseScreenState extends State<CourseScreen> {
 
     if (response.success) {
       setState(() {
-        course = CourseById.fromJson(response.data);
+        course = CourseModel.fromJson(response.data);
         _isLoading = false;
         _expandedModules = {
           for (var module in course.modules) module.id: false,
@@ -70,7 +71,7 @@ class CourseScreenState extends State<CourseScreen> {
     }
   }
 
-  void _showAddModuleModal(BuildContext context) {
+  void _showModuleModal(BuildContext context, {ModuleModel? module}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -78,9 +79,11 @@ class CourseScreenState extends State<CourseScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) {
-        return AddModuleModal(
+        return ModuleModal(
           courseId: widget.courseId,
-          onModuleAdded: _loadCourse, // Reload the course after adding a module
+          module: module, // Pass the module if updating
+          onModuleAdded: _loadCourse,
+          onModuleUpdated: _loadCourse,
         );
       },
     );
@@ -106,7 +109,7 @@ class CourseScreenState extends State<CourseScreen> {
                     CourseHeader(
                       imagePath: course.imagePath,
                       title: course.title,
-                      description: course.description ?? 'No Description',
+                      description: course.description ?? '',
                     ),
                     Text(
                       'Модульдар',
@@ -124,7 +127,7 @@ class CourseScreenState extends State<CourseScreen> {
                         ),
                         child: InkWell(
                           onTap: () {
-                            _showAddModuleModal(context);
+                            _showModuleModal(context);
                           },
                           borderRadius: BorderRadius.circular(8.0),
                           child: Padding(
@@ -162,6 +165,12 @@ class CourseScreenState extends State<CourseScreen> {
                       },
                       onGoToTasks: (moduleId) {
                         context.go('/module/${widget.courseId}/test/$moduleId');
+                      },
+                      onEditModule: (module) {
+                        _showModuleModal(
+                          context,
+                          module: module,
+                        ); // Open modal for editing
                       },
                     ),
                   ],
