@@ -77,7 +77,7 @@ class ModuleCard extends StatelessWidget {
                         style: const TextStyle(color: Colors.blue),
                       ),
                     )
-                    : VideoPlayerWidget(videoUrl: videoPath!),
+                    : VideoViewerWidget(videoUrl: videoPath!),
 
               const SizedBox(height: 20),
               ElevatedButton(

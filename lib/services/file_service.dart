@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:edu_lab/utils/api_response.dart';
@@ -46,6 +47,24 @@ class FileService {
       }
     } catch (e) {
       return null;
+    }
+  }
+
+  Future<String> getBase64File(String objectName) async {
+    try {
+      print('Fetching base64 string for: $objectName');
+      var response = await http.get(Uri.parse('$baseUrl/base64/$objectName'));
+
+      if (response.statusCode == 200) {
+        var decodedData = jsonDecode(response.body);
+        String base64String = decodedData['data'];
+        print('Base64 string: $base64String');
+        return base64String;
+      } else {
+        return '';
+      }
+    } catch (e) {
+      return '';
     }
   }
 }

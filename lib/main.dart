@@ -1,6 +1,7 @@
 import 'package:edu_lab/router.dart';
 import 'package:flutter/material.dart';
 
+
 void main() {
   runApp(MyApp());
 }

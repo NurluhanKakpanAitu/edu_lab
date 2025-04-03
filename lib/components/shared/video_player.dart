@@ -1,138 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPlayerWidget extends StatefulWidget {
+class VideoViewerWidget extends StatefulWidget {
   final String videoUrl;
 
-  const VideoPlayerWidget({super.key, required this.videoUrl});
+  const VideoViewerWidget({super.key, required this.videoUrl});
 
   @override
-  VideoPlayerWidgetState createState() => VideoPlayerWidgetState();
+  State<VideoViewerWidget> createState() => _VideoViewerWidgetState();
 }
 
-class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late VideoPlayerController _controller;
-  bool _isPlaying = false;
-  bool _isError = false;
+class _VideoViewerWidgetState extends State<VideoViewerWidget> {
+  late VideoPlayerController _videoController;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _initializeVideo();
-  }
 
-  void _initializeVideo() async {
-    try {
-      _controller = VideoPlayerController.networkUrl(
-          Uri.parse('http://85.202.192.76:9000/course/${widget.videoUrl}'),
-        )
-        ..initialize()
-            .then((_) {
-              setState(
-                () {},
-              ); // Refresh the widget once the video is initialized
-            })
-            .catchError((error) {
-              setState(() => _isError = true);
+    // Initialize Video Player for direct video URLs
+    _videoController = VideoPlayerController.network(widget.videoUrl)
+      ..initialize()
+          .then((_) {
+            setState(() {
+              _isLoading = false;
             });
-    } catch (e) {
-      setState(() => _isError = true);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isError) {
-      return const Center(
-        child: Text("Error loading video", style: TextStyle(color: Colors.red)),
-      );
-    }
-
-    return Column(
-      children: [
-        // Video Player
-        _controller.value.isInitialized
-            ? Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
-                ),
-                _buildControls(),
-              ],
-            )
-            : const Center(child: CircularProgressIndicator()),
-      ],
-    );
-  }
-
-  Widget _buildControls() {
-    return Container(
-      color: Colors.black54, // Semi-transparent background for controls
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Row(
-        children: [
-          // Play/Pause Button
-          IconButton(
-            icon: Icon(
-              _isPlaying ? Icons.pause : Icons.play_arrow,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              setState(() {
-                _isPlaying ? _controller.pause() : _controller.play();
-                _isPlaying = !_isPlaying;
-              });
-            },
-          ),
-
-          // Progress Bar
-          Expanded(
-            child: VideoProgressIndicator(
-              _controller,
-              allowScrubbing: true,
-              colors: VideoProgressColors(
-                playedColor: Colors.blue,
-                bufferedColor: Colors.grey,
-                backgroundColor: Colors.black,
-              ),
-            ),
-          ),
-
-          // Fullscreen Button
-          IconButton(
-            icon: const Icon(Icons.fullscreen, color: Colors.white),
-            onPressed: () {
-              _goFullScreen(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _goFullScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => Scaffold(
-              backgroundColor: Colors.black,
-              body: Center(
-                child: AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
-                ),
-              ),
-            ),
-      ),
-    );
+            _videoController.play(); // Auto-play the video
+          })
+          .catchError((error) {
+            debugPrint('Error initializing video player: $error');
+            setState(() {
+              _isLoading = false;
+            });
+          });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _videoController.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : AspectRatio(
+          aspectRatio: _videoController.value.aspectRatio,
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              VideoPlayer(_videoController),
+              _ControlsOverlay(controller: _videoController),
+              VideoProgressIndicator(
+                _videoController,
+                allowScrubbing: true,
+                colors: VideoProgressColors(
+                  playedColor: Colors.blue,
+                  bufferedColor: Colors.grey,
+                  backgroundColor: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        );
+  }
+}
+
+class _ControlsOverlay extends StatelessWidget {
+  final VideoPlayerController controller;
+
+  const _ControlsOverlay({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        controller.value.isPlaying ? controller.pause() : controller.play();
+      },
+      child: Stack(
+        children: [
+          if (!controller.value.isPlaying)
+            const Center(
+              child: Icon(Icons.play_arrow, size: 64, color: Colors.white),
+            ),
+        ],
+      ),
+    );
   }
 }
