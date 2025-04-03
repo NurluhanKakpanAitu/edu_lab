@@ -190,7 +190,7 @@ class _ModuleScreenState extends State<ModuleScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          VideoViewerWidget(videoUrl: '${_module!.videoPath}'),
+                          VideoViewerWidget(videoUrl: _module!.videoPath!),
                         ],
                       ),
                     const SizedBox(height: 24),
