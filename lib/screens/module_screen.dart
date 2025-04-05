@@ -95,7 +95,7 @@ print("Hello, World!")
             _module!.presentationPath!.isNotEmpty) {
           _webViewController.loadRequest(
             Uri.parse(
-              'https://docs.google.com/viewer?url=http://85.202.192.76:9000/course/${_module!.presentationPath!}',
+              'https://docs.google.com/viewer?url=http://34.67.85.230:9000/course/${_module!.presentationPath!}',
             ),
           );
         }
@@ -141,7 +141,7 @@ print("Hello, World!")
     try {
       final response = await http.post(
         Uri.parse(
-          'http://localhost:5148/api/Module/run',
+          'http://34.67.85.230:5000/api/Module/run',
         ), // Replace with your backend URL
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'code': _codeController.text}),

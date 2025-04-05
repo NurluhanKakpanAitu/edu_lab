@@ -23,7 +23,7 @@ class ProfileAvatar extends StatelessWidget {
             backgroundImage:
                 photoPath != null
                     ? NetworkImage(
-                      'http://85.202.192.76:9000/course/$photoPath',
+                      'http://34.67.85.230:9000/course/$photoPath',
                     )
                     : const AssetImage('assets/default_avatar.png')
                         as ImageProvider<Object>,

@@ -5,7 +5,7 @@ import 'package:edu_lab/utils/api_response.dart';
 import 'package:http/http.dart' as http;
 
 class FileService {
-  final String baseUrl = 'http://localhost:5148/api/File';
+  final String baseUrl = 'http://34.67.85.230:5000/api/File';
   final Dio _dio = Dio();
 
   /// Uploads a file to MinIO storage.

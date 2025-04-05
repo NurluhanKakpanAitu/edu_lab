@@ -15,7 +15,7 @@ class _VideoViewerWidgetState extends State<VideoViewerWidget> {
   VideoPlayerController? _videoController;
   bool _isLoading = true;
   bool _isDirectVideo = false;
-  final String minioBaseUrl = 'http://85.202.192.76:9000/course/';
+  final String minioBaseUrl = 'http://34.67.85.230:9000/course/';
 
   @override
   void initState() {

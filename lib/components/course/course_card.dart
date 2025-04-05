@@ -37,7 +37,7 @@ class CourseCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.network(
-                'http://85.202.192.76:9000/course/${course.imagePath}',
+                'http://34.67.85.230:9000/course/${course.imagePath}',
                 height: 200,
                 width: double.infinity,
                 fit: BoxFit.cover,
