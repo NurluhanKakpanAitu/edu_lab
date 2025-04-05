@@ -52,13 +52,11 @@ class FileService {
 
   Future<String> getBase64File(String objectName) async {
     try {
-      print('Fetching base64 string for: $objectName');
       var response = await http.get(Uri.parse('$baseUrl/base64/$objectName'));
 
       if (response.statusCode == 200) {
         var decodedData = jsonDecode(response.body);
         String base64String = decodedData['data'];
-        print('Base64 string: $base64String');
         return base64String;
       } else {
         return '';
