@@ -8,9 +8,9 @@ import 'package:edu_lab/entities/requests/course_request.dart';
 import 'package:edu_lab/entities/user.dart';
 import 'package:edu_lab/services/auth_service.dart';
 import 'package:edu_lab/services/course_service.dart';
+import 'package:edu_lab/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -65,6 +65,7 @@ class HomeScreenState extends State<HomeScreen> {
     if (response.success) {
       setState(() {
         user = User.fromJson(response.data);
+        Storage.saveRole(user.role);
       });
     } else {
       context.go('/auth');
@@ -144,6 +145,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ),
                       SizedBox(height: 10),
                       CourseList(
+                        role: user.role,
                         courses: courses,
                         onDeleteCourse: (String id) {
                           _deleteCourse(id);

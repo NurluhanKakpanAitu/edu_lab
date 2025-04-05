@@ -3,10 +3,14 @@ import 'package:edu_lab/components/shared/video_player.dart';
 import 'package:edu_lab/entities/models/module_model.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_code_editor/flutter_code_editor.dart';
+import 'package:highlight/languages/python.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ModuleScreen extends StatefulWidget {
   final String moduleId;
@@ -23,6 +27,17 @@ class _ModuleScreenState extends State<ModuleScreen> {
   bool _isWebViewLoading = false; // Track WebView loading state
   late final WebViewController
   _webViewController; // Single WebViewController instance
+
+  final CodeController _codeController = CodeController(
+    text: '''
+# Write your Python code here
+print("Hello, World!")
+''',
+    language: python,
+  );
+
+  String _output = '';
+  bool _isCodeRunning = false;
 
   @override
   void initState() {
@@ -110,6 +125,52 @@ class _ModuleScreenState extends State<ModuleScreen> {
     }
   }
 
+  Future<void> _runCode() async {
+    setState(() {
+      _isCodeRunning = true;
+      _output = '';
+    });
+
+    if (_codeController.text.isEmpty) {
+      setState(() {
+        _output = 'Код бос';
+        _isCodeRunning = false;
+      });
+      return;
+    }
+    try {
+      final response = await http.post(
+        Uri.parse(
+          'http://localhost:5148/api/Module/run',
+        ), // Replace with your backend URL
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'code': _codeController.text}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _output = data['output'] ?? '';
+          if (data['error'] != null && data['error'].isNotEmpty) {
+            _output += '\nError:\n${data['error']}';
+          }
+        });
+      } else {
+        setState(() {
+          _output = 'Error: ${response.body}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _output = 'Error: $e';
+      });
+    } finally {
+      setState(() {
+        _isCodeRunning = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,6 +238,8 @@ class _ModuleScreenState extends State<ModuleScreen> {
                         ],
                       ),
                     const SizedBox(height: 24),
+
+                    // Video Section
                     if (_module!.videoPath != null &&
                         _module!.videoPath!.isNotEmpty)
                       Column(
@@ -194,6 +257,7 @@ class _ModuleScreenState extends State<ModuleScreen> {
                         ],
                       ),
                     const SizedBox(height: 24),
+
                     // Task Section
                     if (_module!.taskPath != null &&
                         _module!.taskPath!.isNotEmpty)
@@ -211,30 +275,22 @@ class _ModuleScreenState extends State<ModuleScreen> {
                           ElevatedButton(
                             onPressed: () => _openUrl(_module!.taskPath!),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Colors.blue, // Button background color
-                              foregroundColor: Colors.white, // Text color
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 24,
                                 vertical: 12,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  12,
-                                ), // Rounded corners
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              elevation: 4, // Shadow effect
+                              elevation: 4,
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
-                                  Icons.open_in_new,
-                                  size: 20,
-                                ), // Add an icon
-                                const SizedBox(
-                                  width: 8,
-                                ), // Spacing between icon and text
+                                const Icon(Icons.open_in_new, size: 20),
+                                const SizedBox(width: 8),
                                 const Text(
                                   'Тапсырманы ашу',
                                   style: TextStyle(
@@ -246,6 +302,61 @@ class _ModuleScreenState extends State<ModuleScreen> {
                             ),
                           ),
                         ],
+                      ),
+                    const SizedBox(height: 24),
+
+                    // Python Code Editor Section
+                    const Text(
+                      'Python Code Editor:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 300, // Increase the height of the code editor
+                      child: CodeTheme(
+                        data: CodeThemeData(
+                          styles: {
+                            'root': TextStyle(
+                              color: const Color.fromARGB(255, 190, 186, 186),
+                            ),
+                            'keyword': TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'string': TextStyle(color: Colors.green),
+                            'comment': TextStyle(color: Colors.grey),
+                          },
+                        ),
+                        child: CodeField(
+                          controller: _codeController,
+                          textStyle: const TextStyle(
+                            fontFamily: 'SourceCodePro',
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _isCodeRunning ? null : _runCode,
+                      child:
+                          _isCodeRunning
+                              ? const CircularProgressIndicator()
+                              : const Text('Run Code'),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_output.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        color: Colors.black,
+                        child: SingleChildScrollView(
+                          child: Text(
+                            _output,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
                   ],
                 ),

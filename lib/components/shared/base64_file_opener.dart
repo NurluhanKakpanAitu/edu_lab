@@ -25,7 +25,6 @@ class Base64FileOpener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Base64 string: $base64String');
     return Scaffold(
       appBar: AppBar(title: Text("File Opener")),
       body: Center(

@@ -23,8 +23,7 @@ class CourseScreenState extends State<CourseScreen> {
   late CourseModel course;
   var courseService = CourseService();
   var _isLoading = true;
-  Map<String, bool> _expandedModules =
-      {}; // Track expanded state for each module
+  Map<String, bool> _expandedModules = {};
 
   User user = User(id: '', nickname: '', email: '', role: 2);
 
@@ -155,6 +154,7 @@ class CourseScreenState extends State<CourseScreen> {
                       ),
                     const SizedBox(height: 16),
                     ModuleList(
+                      role: user.role,
                       modules: course.modules,
                       expandedModules: _expandedModules,
                       onToggleExpand: (moduleId) {

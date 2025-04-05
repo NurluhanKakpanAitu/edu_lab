@@ -6,6 +6,7 @@ class CourseCard extends StatelessWidget {
   final VoidCallback onGoToCourse;
   final VoidCallback? onDeleteCourse;
   final VoidCallback? onEditCourse;
+  final int role;
 
   const CourseCard({
     super.key,
@@ -13,6 +14,7 @@ class CourseCard extends StatelessWidget {
     required this.onGoToCourse,
     this.onDeleteCourse,
     this.onEditCourse,
+    required this.role,
   });
 
   @override
@@ -73,13 +75,13 @@ class CourseCard extends StatelessWidget {
                 // Left side: Edit and Delete buttons
                 Row(
                   children: [
-                    if (onEditCourse != null)
+                    if (onEditCourse != null && role == 1)
                       IconButton(
                         onPressed: onEditCourse,
                         icon: const Icon(Icons.edit, color: Colors.orange),
                         tooltip: 'Өңдеу',
                       ),
-                    if (onDeleteCourse != null)
+                    if (onDeleteCourse != null && role == 1)
                       IconButton(
                         onPressed: onDeleteCourse,
                         icon: const Icon(Icons.delete, color: Colors.red),

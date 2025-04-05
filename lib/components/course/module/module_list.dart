@@ -7,6 +7,7 @@ class ModuleList extends StatelessWidget {
   final Function(String) onToggleExpand;
   final Function(String) goToModule;
   final Function(ModuleModel)? onEditModule;
+  final int role;
 
   const ModuleList({
     super.key,
@@ -15,6 +16,7 @@ class ModuleList extends StatelessWidget {
     required this.onToggleExpand,
     required this.goToModule,
     this.onEditModule,
+    required this.role,
   });
 
   @override
@@ -33,15 +35,16 @@ class ModuleList extends StatelessWidget {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.orange),
-                          tooltip: 'Өңдеу',
-                          onPressed: () {
-                            if (onEditModule != null) {
-                              onEditModule!(module);
-                            }
-                          },
-                        ),
+                        if (role == 1)
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.orange),
+                            tooltip: 'Өңдеу',
+                            onPressed: () {
+                              if (onEditModule != null) {
+                                onEditModule!(module);
+                              }
+                            },
+                          ),
                         IconButton(
                           icon: const Icon(
                             Icons.arrow_forward,
