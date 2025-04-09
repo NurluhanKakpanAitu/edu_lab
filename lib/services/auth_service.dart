@@ -21,6 +21,7 @@ class AuthService {
         return ApiResponse.fromError('loginFailed');
       }
     } catch (e) {
+      print(e.toString());
       return ApiResponse.fromError('loginFailed');
     }
   }

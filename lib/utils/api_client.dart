@@ -7,7 +7,7 @@ import 'package:edu_lab/utils/storage.dart';
 class ApiClient {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://34.67.85.230:5000/api',
+      baseUrl: 'http://192.168.12.134:5148/api',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
     ),
@@ -33,6 +33,10 @@ class ApiClient {
 
               // Retry the request with the new token
               return handler.resolve(await _dio.fetch(e.requestOptions));
+            } else {
+              // If refresh token fails, clear tokens and redirect to login
+              await Storage.clearTokens();
+              // Optionally, you can redirect to login page here
             }
           }
           return handler.next(e);
@@ -59,6 +63,7 @@ class ApiClient {
       }
     } catch (e) {
       await Storage.clearTokens();
+      return false;
     }
     return false;
   }
