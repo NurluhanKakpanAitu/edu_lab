@@ -5,7 +5,7 @@ class CourseHeader extends StatelessWidget {
   final String title;
   final String description;
 
-  const CourseHeader({
+  CourseHeader({
     super.key,
     required this.imagePath,
     required this.title,
@@ -21,7 +21,7 @@ class CourseHeader extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: Image.network(
-              'http://34.67.85.230:9000/course/$imagePath',
+              'http://34.131.128.137:9000/course/$imagePath'.trim(),
               height: 200,
               width: double.infinity,
               fit: BoxFit.cover,

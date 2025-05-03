@@ -1,5 +1,4 @@
 import 'package:edu_lab/components/shared/app_bar.dart';
-import 'package:edu_lab/components/shared/video_player.dart';
 import 'package:edu_lab/entities/models/module_model.dart';
 import 'package:edu_lab/services/course_service.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +6,6 @@ import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:highlight/languages/python.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -24,9 +21,6 @@ class ModuleScreen extends StatefulWidget {
 class _ModuleScreenState extends State<ModuleScreen> {
   bool _isLoading = true;
   ModuleModel? _module;
-  bool _isWebViewLoading = false; // Track WebView loading state
-  late final WebViewController
-  _webViewController; // Single WebViewController instance
 
   final CodeController _codeController = CodeController(
     text: '''
@@ -42,37 +36,6 @@ print("Hello, World!")
   @override
   void initState() {
     super.initState();
-    WebViewPlatform.instance ??= WebKitWebViewPlatform();
-
-    _webViewController =
-        WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onPageStarted: (url) {
-                setState(() {
-                  _isWebViewLoading = true;
-                });
-                debugPrint('WebView started loading: $url');
-              },
-              onPageFinished: (url) {
-                setState(() {
-                  _isWebViewLoading = false;
-                });
-                debugPrint('WebView finished loading: $url');
-              },
-              onWebResourceError: (error) {
-                setState(() {
-                  _isWebViewLoading = false;
-                });
-                debugPrint('WebView failed to load: ${error.description}');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Қате: ${error.description}')),
-                );
-              },
-            ),
-          );
-
     _loadModule();
   }
 
@@ -91,26 +54,7 @@ print("Hello, World!")
         _isLoading = false;
 
         // Load the presentation URL into the WebView
-        if (_module!.presentationPath != null &&
-            _module!.presentationPath!.isNotEmpty) {
-          _webViewController.loadRequest(
-            Uri.parse(
-              'https://docs.google.com/viewer?url=http://34.67.85.230:9000/course/${_module!.presentationPath!}',
-            ),
-          );
-        }
       });
-    } else {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Модульді жүктеу сәтсіз аяқталмады: ${response.errorMessage}',
-          ),
-        ),
-      );
     }
   }
 
@@ -141,7 +85,7 @@ print("Hello, World!")
     try {
       final response = await http.post(
         Uri.parse(
-          'http://34.67.85.230:5000/api/Module/run',
+          'http://34.131.128.137:5000/api/Module/run',
         ), // Replace with your backend URL
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'code': _codeController.text}),
@@ -208,6 +152,9 @@ print("Hello, World!")
                     const SizedBox(height: 24),
 
                     // Presentation Section
+                    // Replace the existing Presentation Section with this:
+
+                    // Presentation Section
                     if (_module!.presentationPath != null &&
                         _module!.presentationPath!.isNotEmpty)
                       Column(
@@ -221,23 +168,45 @@ print("Hello, World!")
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Stack(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 16 / 9,
-                                child: WebViewWidget(
-                                  controller: _webViewController,
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed:
+                                  () => _openUrl(
+                                    'http://34.131.128.137:9000/course/${_module!.presentationPath!}'
+                                        .trim(),
+                                  ),
+                              icon: const Icon(
+                                Icons.download_rounded,
+                                size: 24,
+                              ),
+                              label: const Text(
+                                'Презентацияны жүктеу',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              if (_isWebViewLoading)
-                                const Center(
-                                  child: CircularProgressIndicator(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 16,
                                 ),
-                            ],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 4,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     const SizedBox(height: 24),
+
+                    // Video Section
+                    // Replace the Video Section with this:
 
                     // Video Section
                     if (_module!.videoPath != null &&
@@ -253,7 +222,51 @@ print("Hello, World!")
                             ),
                           ),
                           const SizedBox(height: 8),
-                          VideoViewerWidget(videoUrl: _module!.videoPath!),
+                          Container(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                final videoPath = _module!.videoPath!;
+                                if (videoPath.startsWith('http')) {
+                                  // If it's a web URL, redirect to the video
+                                  _openUrl(videoPath);
+                                } else {
+                                  // If it's a MinIO file, generate download URL
+                                  _openUrl(
+                                    'http://34.131.128.137:9000/course/$videoPath'
+                                        .trim(),
+                                  );
+                                }
+                              },
+                              icon: Icon(
+                                _module!.videoPath!.startsWith('http')
+                                    ? Icons.play_circle_outline
+                                    : Icons.download_rounded,
+                                size: 24,
+                              ),
+                              label: Text(
+                                _module!.videoPath!.startsWith('http')
+                                    ? 'Бейнені қарау'
+                                    : 'Бейнені жүктеу',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 4,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     const SizedBox(height: 24),
@@ -304,60 +317,179 @@ print("Hello, World!")
                         ],
                       ),
                     const SizedBox(height: 24),
+                    // Replace the Python Code Editor Section with this:
 
                     // Python Code Editor Section
-                    const Text(
-                      'Python Code Editor:',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 300, // Increase the height of the code editor
-                      child: CodeTheme(
-                        data: CodeThemeData(
-                          styles: {
-                            'root': TextStyle(
-                              color: const Color.fromARGB(255, 190, 186, 186),
-                            ),
-                            'keyword': TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            'string': TextStyle(color: Colors.green),
-                            'comment': TextStyle(color: Colors.grey),
-                          },
-                        ),
-                        child: CodeField(
-                          controller: _codeController,
-                          textStyle: const TextStyle(
-                            fontFamily: 'SourceCodePro',
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E1E1E), // Dark theme background
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
                           ),
-                        ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _isCodeRunning ? null : _runCode,
-                      child:
-                          _isCodeRunning
-                              ? const CircularProgressIndicator()
-                              : const Text('Run Code'),
-                    ),
-                    const SizedBox(height: 16),
-                    if (_output.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        color: Colors.black,
-                        child: SingleChildScrollView(
-                          child: Text(
-                            _output,
-                            style: const TextStyle(color: Colors.white),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Editor Header
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Python код редакторы',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                ElevatedButton.icon(
+                                  onPressed: _isCodeRunning ? null : _runCode,
+                                  icon: const Icon(Icons.play_arrow),
+                                  label: Text(
+                                    _isCodeRunning ? 'Running...' : 'Run Code',
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+
+                          // Code Editor
+                          Container(
+                            height: 300,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2D2D2D),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: CodeTheme(
+                              data: CodeThemeData(
+                                styles: {
+                                  'root': const TextStyle(color: Colors.white),
+                                  'keyword': const TextStyle(
+                                    color: Color(0xFF569CD6),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  'string': const TextStyle(
+                                    color: Color(0xFFCE9178),
+                                  ),
+                                  'number': const TextStyle(
+                                    color: Color(0xFFB5CEA8),
+                                  ),
+                                  'comment': const TextStyle(
+                                    color: Color(0xFF6A9955),
+                                  ),
+                                  'type': const TextStyle(
+                                    color: Color(0xFF4EC9B0),
+                                  ),
+                                },
+                              ),
+                              child: CodeField(
+                                controller: _codeController,
+                                textStyle: const TextStyle(
+                                  fontFamily: 'JetBrains Mono',
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Output Section
+                          if (_output.isNotEmpty)
+                            Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2D2D2D),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color:
+                                      _output.contains('Error')
+                                          ? Colors.red.withOpacity(0.5)
+                                          : Colors.green.withOpacity(0.5),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          _output.contains('Error')
+                                              ? Colors.red.withOpacity(0.1)
+                                              : Colors.green.withOpacity(0.1),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(8),
+                                        topRight: Radius.circular(8),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          _output.contains('Error')
+                                              ? Icons.error_outline
+                                              : Icons.check_circle_outline,
+                                          color:
+                                              _output.contains('Error')
+                                                  ? Colors.red
+                                                  : Colors.green,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          _output.contains('Error')
+                                              ? 'Error'
+                                              : 'Output',
+                                          style: TextStyle(
+                                            color:
+                                                _output.contains('Error')
+                                                    ? Colors.red
+                                                    : Colors.green,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    child: SelectableText(
+                                      _output,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'JetBrains Mono',
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                       ),
+                    ),
                   ],
                 ),
               ),
