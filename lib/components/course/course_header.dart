@@ -21,7 +21,7 @@ class CourseHeader extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: Image.network(
-              'http://34.131.128.137:9000/course/$imagePath'.trim(),
+              'http://82.115.49.230:9000/course/$imagePath'.trim(),
               height: 200,
               width: double.infinity,
               fit: BoxFit.cover,
