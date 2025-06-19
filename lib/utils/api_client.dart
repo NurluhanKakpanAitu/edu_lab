@@ -7,7 +7,7 @@ import 'package:edu_lab/utils/storage.dart';
 class ApiClient {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://82.115.49.230:5000/api',
+      baseUrl: 'http://34.57.171.38:5000/api',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
     ),

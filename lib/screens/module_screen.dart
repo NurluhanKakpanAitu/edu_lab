@@ -85,7 +85,7 @@ print("Hello, World!")
     try {
       final response = await http.post(
         Uri.parse(
-          'http://82.115.49.230:5000/api/Module/run',
+          'http://34.57.171.38:5000/api/Module/run',
         ), // Replace with your backend URL
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'code': _codeController.text}),
@@ -173,7 +173,7 @@ print("Hello, World!")
                             child: ElevatedButton.icon(
                               onPressed:
                                   () => _openUrl(
-                                    'http://82.115.49.230:9000/course/${_module!.presentationPath!}'
+                                    'http://34.57.171.38:9000/course/${_module!.presentationPath!}'
                                         .trim(),
                                   ),
                               icon: const Icon(
@@ -233,7 +233,7 @@ print("Hello, World!")
                                 } else {
                                   // If it's a MinIO file, generate download URL
                                   _openUrl(
-                                    'http://82.115.49.230:9000/course/$videoPath'
+                                    'http://34.57.171.38:9000/course/$videoPath'
                                         .trim(),
                                   );
                                 }
